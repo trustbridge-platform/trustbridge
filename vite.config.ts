@@ -1,12 +1,8 @@
-// TrustBridge — Vite + TanStack Start config
 import { defineConfig } from "vite";
-import tsConfigPaths from "vite-tsconfig-paths";
+import viteTsConfigPaths from "vite-tsconfig-paths";
+import { tanstackStart } from "@tanstack/react-start/plugin/vite";
+import react from "@vitejs/plugin-react";
 
 export default defineConfig({
-  plugins: [
-    tsConfigPaths(),
-  ],
-  server: {
-    port: 5173,
-  },
+  plugins: [tanstackStart(), viteTsConfigPaths(), react()],
 });
