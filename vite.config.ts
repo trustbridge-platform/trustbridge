@@ -10,5 +10,6 @@ build: {
 minify: false,
 cssMinify: false,
 ssr: true,
+outDir: ".output/public",
 },
 });
