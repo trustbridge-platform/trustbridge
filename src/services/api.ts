@@ -1,5 +1,7 @@
-const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
-console.log("[TrustBridge] API Base URL:", BASE);
+const API_URL = import.meta.env.VITE_API_URL || "https://trustbridge-7dch.onrender.com/api";
+const BASE = API_URL;
+console.log("📡 TrustBridge API URL:", API_URL);
+console.log("📤 Using base:", BASE);
 
 function getToken(): string | null {
   return localStorage.getItem("trustbridge_token");
@@ -12,7 +14,9 @@ async function request(path: string, options: RequestInit = {}): Promise<any> {
     ...(options.headers as Record<string, string>),
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
-  const res = await fetch(`${BASE}${path}`, { ...options, headers });
+  const url = `${BASE}${path}`;
+  console.log(`📤 API Request: ${options.method || "GET"} ${url}`);
+  const res = await fetch(url, { ...options, headers });
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
     throw new Error(body.error || `Request failed: ${res.statusText}`);
