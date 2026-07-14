@@ -1,0 +1,1 @@
+import{w as e}from"./DonateModal-el721E0Y.js";import{_ as t,h as n,m as r,n as i,u as a}from"./index-4fH0q2Il.js";var o=t(n(),1),s=r();function c({children:t}){let{isAuthenticated:n}=i();e();let r=a();return(0,o.useEffect)(()=>{n||r({to:`/login`})},[n,r]),n?(0,s.jsx)(s.Fragment,{children:t}):null}export{c as t};

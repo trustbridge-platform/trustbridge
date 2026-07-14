@@ -1,4 +1,4 @@
-import { n as __require, t as __commonJSMin } from "../_runtime.mjs";
+import { r as __require, t as __commonJSMin } from "../_runtime.mjs";
 import processModule from "node:process";
 import { Buffer } from "node:buffer";
 //#region node_modules/pngjs/lib/chunkstream.js

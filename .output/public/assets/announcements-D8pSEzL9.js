@@ -1,0 +1,1 @@
+import{m as e}from"./index-4fH0q2Il.js";import{t}from"./-community-page-CWHEyc-A.js";var n=e(),r=()=>(0,n.jsx)(t,{channel:`announcements`});export{r as component};

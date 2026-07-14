@@ -1,11 +1,11 @@
 {
-  "compatibility_date": "2026-07-10",
+  "compatibility_date": "2026-07-14",
   "main": "index.mjs",
   "assets": {
     "binding": "ASSETS",
     "directory": "..\\public"
   },
-  "name": "tanstack-start-ts",
+  "name": "trustbridge-platform-trustbridge",
   "compatibility_flags": [
     "nodejs_compat"
   ],

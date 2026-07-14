@@ -1,407 +1,374 @@
-import { r as __toESM, t as __commonJSMin } from "../_runtime.mjs";
-import processModule from "node:process";
-//#region node_modules/react/cjs/react.production.js
+import { i as __toESM, t as __commonJSMin } from "../_runtime.mjs";
+//#region node_modules/react/cjs/react.production.min.js
 /**
 * @license React
-* react.production.js
+* react.production.min.js
 *
-* Copyright (c) Meta Platforms, Inc. and affiliates.
+* Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-var require_react_production = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_PORTAL_TYPE = Symbol.for("react.portal"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment"), REACT_STRICT_MODE_TYPE = Symbol.for("react.strict_mode"), REACT_PROFILER_TYPE = Symbol.for("react.profiler"), REACT_CONSUMER_TYPE = Symbol.for("react.consumer"), REACT_CONTEXT_TYPE = Symbol.for("react.context"), REACT_FORWARD_REF_TYPE = Symbol.for("react.forward_ref"), REACT_SUSPENSE_TYPE = Symbol.for("react.suspense"), REACT_MEMO_TYPE = Symbol.for("react.memo"), REACT_LAZY_TYPE = Symbol.for("react.lazy"), REACT_ACTIVITY_TYPE = Symbol.for("react.activity"), MAYBE_ITERATOR_SYMBOL = Symbol.iterator;
-	function getIteratorFn(maybeIterable) {
-		if (null === maybeIterable || "object" !== typeof maybeIterable) return null;
-		maybeIterable = MAYBE_ITERATOR_SYMBOL && maybeIterable[MAYBE_ITERATOR_SYMBOL] || maybeIterable["@@iterator"];
-		return "function" === typeof maybeIterable ? maybeIterable : null;
+var require_react_production_min = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var l = Symbol.for("react.element"), n = Symbol.for("react.portal"), p = Symbol.for("react.fragment"), q = Symbol.for("react.strict_mode"), r = Symbol.for("react.profiler"), t = Symbol.for("react.provider"), u = Symbol.for("react.context"), v = Symbol.for("react.forward_ref"), w = Symbol.for("react.suspense"), x = Symbol.for("react.memo"), y = Symbol.for("react.lazy"), z = Symbol.iterator;
+	function A(a) {
+		if (null === a || "object" !== typeof a) return null;
+		a = z && a[z] || a["@@iterator"];
+		return "function" === typeof a ? a : null;
 	}
-	var ReactNoopUpdateQueue = {
+	var B = {
 		isMounted: function() {
 			return !1;
 		},
 		enqueueForceUpdate: function() {},
 		enqueueReplaceState: function() {},
 		enqueueSetState: function() {}
-	}, assign = Object.assign, emptyObject = {};
-	function Component(props, context, updater) {
-		this.props = props;
-		this.context = context;
-		this.refs = emptyObject;
-		this.updater = updater || ReactNoopUpdateQueue;
+	}, C = Object.assign, D = {};
+	function E(a, b, e) {
+		this.props = a;
+		this.context = b;
+		this.refs = D;
+		this.updater = e || B;
 	}
-	Component.prototype.isReactComponent = {};
-	Component.prototype.setState = function(partialState, callback) {
-		if ("object" !== typeof partialState && "function" !== typeof partialState && null != partialState) throw Error("takes an object of state variables to update or a function which returns an object of state variables.");
-		this.updater.enqueueSetState(this, partialState, callback, "setState");
+	E.prototype.isReactComponent = {};
+	E.prototype.setState = function(a, b) {
+		if ("object" !== typeof a && "function" !== typeof a && null != a) throw Error("setState(...): takes an object of state variables to update or a function which returns an object of state variables.");
+		this.updater.enqueueSetState(this, a, b, "setState");
 	};
-	Component.prototype.forceUpdate = function(callback) {
-		this.updater.enqueueForceUpdate(this, callback, "forceUpdate");
+	E.prototype.forceUpdate = function(a) {
+		this.updater.enqueueForceUpdate(this, a, "forceUpdate");
 	};
-	function ComponentDummy() {}
-	ComponentDummy.prototype = Component.prototype;
-	function PureComponent(props, context, updater) {
-		this.props = props;
-		this.context = context;
-		this.refs = emptyObject;
-		this.updater = updater || ReactNoopUpdateQueue;
+	function F() {}
+	F.prototype = E.prototype;
+	function G(a, b, e) {
+		this.props = a;
+		this.context = b;
+		this.refs = D;
+		this.updater = e || B;
 	}
-	var pureComponentPrototype = PureComponent.prototype = new ComponentDummy();
-	pureComponentPrototype.constructor = PureComponent;
-	assign(pureComponentPrototype, Component.prototype);
-	pureComponentPrototype.isPureReactComponent = !0;
-	var isArrayImpl = Array.isArray;
-	function noop() {}
-	var ReactSharedInternals = {
-		H: null,
-		A: null,
-		T: null,
-		S: null
-	}, hasOwnProperty = Object.prototype.hasOwnProperty;
-	function ReactElement(type, key, props) {
-		var refProp = props.ref;
+	var H = G.prototype = new F();
+	H.constructor = G;
+	C(H, E.prototype);
+	H.isPureReactComponent = !0;
+	var I = Array.isArray, J = Object.prototype.hasOwnProperty, K = { current: null }, L = {
+		key: !0,
+		ref: !0,
+		__self: !0,
+		__source: !0
+	};
+	function M(a, b, e) {
+		var d, c = {}, k = null, h = null;
+		if (null != b) for (d in void 0 !== b.ref && (h = b.ref), void 0 !== b.key && (k = "" + b.key), b) J.call(b, d) && !L.hasOwnProperty(d) && (c[d] = b[d]);
+		var g = arguments.length - 2;
+		if (1 === g) c.children = e;
+		else if (1 < g) {
+			for (var f = Array(g), m = 0; m < g; m++) f[m] = arguments[m + 2];
+			c.children = f;
+		}
+		if (a && a.defaultProps) for (d in g = a.defaultProps, g) void 0 === c[d] && (c[d] = g[d]);
 		return {
-			$$typeof: REACT_ELEMENT_TYPE,
-			type,
-			key,
-			ref: void 0 !== refProp ? refProp : null,
-			props
+			$$typeof: l,
+			type: a,
+			key: k,
+			ref: h,
+			props: c,
+			_owner: K.current
 		};
 	}
-	function cloneAndReplaceKey(oldElement, newKey) {
-		return ReactElement(oldElement.type, newKey, oldElement.props);
+	function N(a, b) {
+		return {
+			$$typeof: l,
+			type: a.type,
+			key: b,
+			ref: a.ref,
+			props: a.props,
+			_owner: a._owner
+		};
 	}
-	function isValidElement(object) {
-		return "object" === typeof object && null !== object && object.$$typeof === REACT_ELEMENT_TYPE;
+	function O(a) {
+		return "object" === typeof a && null !== a && a.$$typeof === l;
 	}
-	function escape(key) {
-		var escaperLookup = {
+	function escape(a) {
+		var b = {
 			"=": "=0",
 			":": "=2"
 		};
-		return "$" + key.replace(/[=:]/g, function(match) {
-			return escaperLookup[match];
+		return "$" + a.replace(/[=:]/g, function(a) {
+			return b[a];
 		});
 	}
-	var userProvidedKeyEscapeRegex = /\/+/g;
-	function getElementKey(element, index) {
-		return "object" === typeof element && null !== element && null != element.key ? escape("" + element.key) : index.toString(36);
+	var P = /\/+/g;
+	function Q(a, b) {
+		return "object" === typeof a && null !== a && null != a.key ? escape("" + a.key) : b.toString(36);
 	}
-	function resolveThenable(thenable) {
-		switch (thenable.status) {
-			case "fulfilled": return thenable.value;
-			case "rejected": throw thenable.reason;
-			default: switch ("string" === typeof thenable.status ? thenable.then(noop, noop) : (thenable.status = "pending", thenable.then(function(fulfilledValue) {
-				"pending" === thenable.status && (thenable.status = "fulfilled", thenable.value = fulfilledValue);
-			}, function(error) {
-				"pending" === thenable.status && (thenable.status = "rejected", thenable.reason = error);
-			})), thenable.status) {
-				case "fulfilled": return thenable.value;
-				case "rejected": throw thenable.reason;
-			}
-		}
-		throw thenable;
-	}
-	function mapIntoArray(children, array, escapedPrefix, nameSoFar, callback) {
-		var type = typeof children;
-		if ("undefined" === type || "boolean" === type) children = null;
-		var invokeCallback = !1;
-		if (null === children) invokeCallback = !0;
-		else switch (type) {
-			case "bigint":
+	function R(a, b, e, d, c) {
+		var k = typeof a;
+		if ("undefined" === k || "boolean" === k) a = null;
+		var h = !1;
+		if (null === a) h = !0;
+		else switch (k) {
 			case "string":
 			case "number":
-				invokeCallback = !0;
+				h = !0;
 				break;
-			case "object": switch (children.$$typeof) {
-				case REACT_ELEMENT_TYPE:
-				case REACT_PORTAL_TYPE:
-					invokeCallback = !0;
-					break;
-				case REACT_LAZY_TYPE: return invokeCallback = children._init, mapIntoArray(invokeCallback(children._payload), array, escapedPrefix, nameSoFar, callback);
+			case "object": switch (a.$$typeof) {
+				case l:
+				case n: h = !0;
 			}
 		}
-		if (invokeCallback) return callback = callback(children), invokeCallback = "" === nameSoFar ? "." + getElementKey(children, 0) : nameSoFar, isArrayImpl(callback) ? (escapedPrefix = "", null != invokeCallback && (escapedPrefix = invokeCallback.replace(userProvidedKeyEscapeRegex, "$&/") + "/"), mapIntoArray(callback, array, escapedPrefix, "", function(c) {
-			return c;
-		})) : null != callback && (isValidElement(callback) && (callback = cloneAndReplaceKey(callback, escapedPrefix + (null == callback.key || children && children.key === callback.key ? "" : ("" + callback.key).replace(userProvidedKeyEscapeRegex, "$&/") + "/") + invokeCallback)), array.push(callback)), 1;
-		invokeCallback = 0;
-		var nextNamePrefix = "" === nameSoFar ? "." : nameSoFar + ":";
-		if (isArrayImpl(children)) for (var i = 0; i < children.length; i++) nameSoFar = children[i], type = nextNamePrefix + getElementKey(nameSoFar, i), invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback);
-		else if (i = getIteratorFn(children), "function" === typeof i) for (children = i.call(children), i = 0; !(nameSoFar = children.next()).done;) nameSoFar = nameSoFar.value, type = nextNamePrefix + getElementKey(nameSoFar, i++), invokeCallback += mapIntoArray(nameSoFar, array, escapedPrefix, type, callback);
-		else if ("object" === type) {
-			if ("function" === typeof children.then) return mapIntoArray(resolveThenable(children), array, escapedPrefix, nameSoFar, callback);
-			array = String(children);
-			throw Error("Objects are not valid as a React child (found: " + ("[object Object]" === array ? "object with keys {" + Object.keys(children).join(", ") + "}" : array) + "). If you meant to render a collection of children, use an array instead.");
+		if (h) return h = a, c = c(h), a = "" === d ? "." + Q(h, 0) : d, I(c) ? (e = "", null != a && (e = a.replace(P, "$&/") + "/"), R(c, b, e, "", function(a) {
+			return a;
+		})) : null != c && (O(c) && (c = N(c, e + (!c.key || h && h.key === c.key ? "" : ("" + c.key).replace(P, "$&/") + "/") + a)), b.push(c)), 1;
+		h = 0;
+		d = "" === d ? "." : d + ":";
+		if (I(a)) for (var g = 0; g < a.length; g++) {
+			k = a[g];
+			var f = d + Q(k, g);
+			h += R(k, b, e, f, c);
 		}
-		return invokeCallback;
+		else if (f = A(a), "function" === typeof f) for (a = f.call(a), g = 0; !(k = a.next()).done;) k = k.value, f = d + Q(k, g++), h += R(k, b, e, f, c);
+		else if ("object" === k) throw b = String(a), Error("Objects are not valid as a React child (found: " + ("[object Object]" === b ? "object with keys {" + Object.keys(a).join(", ") + "}" : b) + "). If you meant to render a collection of children, use an array instead.");
+		return h;
 	}
-	function mapChildren(children, func, context) {
-		if (null == children) return children;
-		var result = [], count = 0;
-		mapIntoArray(children, result, "", "", function(child) {
-			return func.call(context, child, count++);
+	function S(a, b, e) {
+		if (null == a) return a;
+		var d = [], c = 0;
+		R(a, d, "", "", function(a) {
+			return b.call(e, a, c++);
 		});
-		return result;
+		return d;
 	}
-	function lazyInitializer(payload) {
-		if (-1 === payload._status) {
-			var ctor = payload._result;
-			ctor = ctor();
-			ctor.then(function(moduleObject) {
-				if (0 === payload._status || -1 === payload._status) payload._status = 1, payload._result = moduleObject;
-			}, function(error) {
-				if (0 === payload._status || -1 === payload._status) payload._status = 2, payload._result = error;
+	function T(a) {
+		if (-1 === a._status) {
+			var b = a._result;
+			b = b();
+			b.then(function(b) {
+				if (0 === a._status || -1 === a._status) a._status = 1, a._result = b;
+			}, function(b) {
+				if (0 === a._status || -1 === a._status) a._status = 2, a._result = b;
 			});
-			-1 === payload._status && (payload._status = 0, payload._result = ctor);
+			-1 === a._status && (a._status = 0, a._result = b);
 		}
-		if (1 === payload._status) return payload._result.default;
-		throw payload._result;
+		if (1 === a._status) return a._result.default;
+		throw a._result;
 	}
-	var reportGlobalError = "function" === typeof reportError ? reportError : function(error) {
-		if ("object" === typeof window && "function" === typeof window.ErrorEvent) {
-			var event = new window.ErrorEvent("error", {
-				bubbles: !0,
-				cancelable: !0,
-				message: "object" === typeof error && null !== error && "string" === typeof error.message ? String(error.message) : String(error),
-				error
-			});
-			if (!window.dispatchEvent(event)) return;
-		} else if ("object" === typeof processModule && "function" === typeof processModule.emit) {
-			processModule.emit("uncaughtException", error);
-			return;
-		}
-		console.error(error);
-	}, Children = {
-		map: mapChildren,
-		forEach: function(children, forEachFunc, forEachContext) {
-			mapChildren(children, function() {
-				forEachFunc.apply(this, arguments);
-			}, forEachContext);
+	var U = { current: null }, V = { transition: null }, W = {
+		ReactCurrentDispatcher: U,
+		ReactCurrentBatchConfig: V,
+		ReactCurrentOwner: K
+	};
+	function X() {
+		throw Error("act(...) is not supported in production builds of React.");
+	}
+	exports.Children = {
+		map: S,
+		forEach: function(a, b, e) {
+			S(a, function() {
+				b.apply(this, arguments);
+			}, e);
 		},
-		count: function(children) {
-			var n = 0;
-			mapChildren(children, function() {
-				n++;
+		count: function(a) {
+			var b = 0;
+			S(a, function() {
+				b++;
 			});
-			return n;
+			return b;
 		},
-		toArray: function(children) {
-			return mapChildren(children, function(child) {
-				return child;
+		toArray: function(a) {
+			return S(a, function(a) {
+				return a;
 			}) || [];
 		},
-		only: function(children) {
-			if (!isValidElement(children)) throw Error("React.Children.only expected to receive a single React element child.");
-			return children;
+		only: function(a) {
+			if (!O(a)) throw Error("React.Children.only expected to receive a single React element child.");
+			return a;
 		}
 	};
-	exports.Activity = REACT_ACTIVITY_TYPE;
-	exports.Children = Children;
-	exports.Component = Component;
-	exports.Fragment = REACT_FRAGMENT_TYPE;
-	exports.Profiler = REACT_PROFILER_TYPE;
-	exports.PureComponent = PureComponent;
-	exports.StrictMode = REACT_STRICT_MODE_TYPE;
-	exports.Suspense = REACT_SUSPENSE_TYPE;
-	exports.__CLIENT_INTERNALS_DO_NOT_USE_OR_WARN_USERS_THEY_CANNOT_UPGRADE = ReactSharedInternals;
-	exports.__COMPILER_RUNTIME = {
-		__proto__: null,
-		c: function(size) {
-			return ReactSharedInternals.H.useMemoCache(size);
+	exports.Component = E;
+	exports.Fragment = p;
+	exports.Profiler = r;
+	exports.PureComponent = G;
+	exports.StrictMode = q;
+	exports.Suspense = w;
+	exports.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED = W;
+	exports.act = X;
+	exports.cloneElement = function(a, b, e) {
+		if (null === a || void 0 === a) throw Error("React.cloneElement(...): The argument must be a React element, but you passed " + a + ".");
+		var d = C({}, a.props), c = a.key, k = a.ref, h = a._owner;
+		if (null != b) {
+			void 0 !== b.ref && (k = b.ref, h = K.current);
+			void 0 !== b.key && (c = "" + b.key);
+			if (a.type && a.type.defaultProps) var g = a.type.defaultProps;
+			for (f in b) J.call(b, f) && !L.hasOwnProperty(f) && (d[f] = void 0 === b[f] && void 0 !== g ? g[f] : b[f]);
 		}
-	};
-	exports.cache = function(fn) {
-		return function() {
-			return fn.apply(null, arguments);
+		var f = arguments.length - 2;
+		if (1 === f) d.children = e;
+		else if (1 < f) {
+			g = Array(f);
+			for (var m = 0; m < f; m++) g[m] = arguments[m + 2];
+			d.children = g;
+		}
+		return {
+			$$typeof: l,
+			type: a.type,
+			key: c,
+			ref: k,
+			props: d,
+			_owner: h
 		};
 	};
-	exports.cacheSignal = function() {
-		return null;
-	};
-	exports.cloneElement = function(element, config, children) {
-		if (null === element || void 0 === element) throw Error("The argument must be a React element, but you passed " + element + ".");
-		var props = assign({}, element.props), key = element.key;
-		if (null != config) for (propName in void 0 !== config.key && (key = "" + config.key), config) !hasOwnProperty.call(config, propName) || "key" === propName || "__self" === propName || "__source" === propName || "ref" === propName && void 0 === config.ref || (props[propName] = config[propName]);
-		var propName = arguments.length - 2;
-		if (1 === propName) props.children = children;
-		else if (1 < propName) {
-			for (var childArray = Array(propName), i = 0; i < propName; i++) childArray[i] = arguments[i + 2];
-			props.children = childArray;
-		}
-		return ReactElement(element.type, key, props);
-	};
-	exports.createContext = function(defaultValue) {
-		defaultValue = {
-			$$typeof: REACT_CONTEXT_TYPE,
-			_currentValue: defaultValue,
-			_currentValue2: defaultValue,
+	exports.createContext = function(a) {
+		a = {
+			$$typeof: u,
+			_currentValue: a,
+			_currentValue2: a,
 			_threadCount: 0,
 			Provider: null,
-			Consumer: null
+			Consumer: null,
+			_defaultValue: null,
+			_globalName: null
 		};
-		defaultValue.Provider = defaultValue;
-		defaultValue.Consumer = {
-			$$typeof: REACT_CONSUMER_TYPE,
-			_context: defaultValue
+		a.Provider = {
+			$$typeof: t,
+			_context: a
 		};
-		return defaultValue;
+		return a.Consumer = a;
 	};
-	exports.createElement = function(type, config, children) {
-		var propName, props = {}, key = null;
-		if (null != config) for (propName in void 0 !== config.key && (key = "" + config.key), config) hasOwnProperty.call(config, propName) && "key" !== propName && "__self" !== propName && "__source" !== propName && (props[propName] = config[propName]);
-		var childrenLength = arguments.length - 2;
-		if (1 === childrenLength) props.children = children;
-		else if (1 < childrenLength) {
-			for (var childArray = Array(childrenLength), i = 0; i < childrenLength; i++) childArray[i] = arguments[i + 2];
-			props.children = childArray;
-		}
-		if (type && type.defaultProps) for (propName in childrenLength = type.defaultProps, childrenLength) void 0 === props[propName] && (props[propName] = childrenLength[propName]);
-		return ReactElement(type, key, props);
+	exports.createElement = M;
+	exports.createFactory = function(a) {
+		var b = M.bind(null, a);
+		b.type = a;
+		return b;
 	};
 	exports.createRef = function() {
 		return { current: null };
 	};
-	exports.forwardRef = function(render) {
+	exports.forwardRef = function(a) {
 		return {
-			$$typeof: REACT_FORWARD_REF_TYPE,
-			render
+			$$typeof: v,
+			render: a
 		};
 	};
-	exports.isValidElement = isValidElement;
-	exports.lazy = function(ctor) {
+	exports.isValidElement = O;
+	exports.lazy = function(a) {
 		return {
-			$$typeof: REACT_LAZY_TYPE,
+			$$typeof: y,
 			_payload: {
 				_status: -1,
-				_result: ctor
+				_result: a
 			},
-			_init: lazyInitializer
+			_init: T
 		};
 	};
-	exports.memo = function(type, compare) {
+	exports.memo = function(a, b) {
 		return {
-			$$typeof: REACT_MEMO_TYPE,
-			type,
-			compare: void 0 === compare ? null : compare
+			$$typeof: x,
+			type: a,
+			compare: void 0 === b ? null : b
 		};
 	};
-	exports.startTransition = function(scope) {
-		var prevTransition = ReactSharedInternals.T, currentTransition = {};
-		ReactSharedInternals.T = currentTransition;
+	exports.startTransition = function(a) {
+		var b = V.transition;
+		V.transition = {};
 		try {
-			var returnValue = scope(), onStartTransitionFinish = ReactSharedInternals.S;
-			null !== onStartTransitionFinish && onStartTransitionFinish(currentTransition, returnValue);
-			"object" === typeof returnValue && null !== returnValue && "function" === typeof returnValue.then && returnValue.then(noop, reportGlobalError);
-		} catch (error) {
-			reportGlobalError(error);
+			a();
 		} finally {
-			null !== prevTransition && null !== currentTransition.types && (prevTransition.types = currentTransition.types), ReactSharedInternals.T = prevTransition;
+			V.transition = b;
 		}
 	};
-	exports.unstable_useCacheRefresh = function() {
-		return ReactSharedInternals.H.useCacheRefresh();
+	exports.unstable_act = X;
+	exports.useCallback = function(a, b) {
+		return U.current.useCallback(a, b);
 	};
-	exports.use = function(usable) {
-		return ReactSharedInternals.H.use(usable);
-	};
-	exports.useActionState = function(action, initialState, permalink) {
-		return ReactSharedInternals.H.useActionState(action, initialState, permalink);
-	};
-	exports.useCallback = function(callback, deps) {
-		return ReactSharedInternals.H.useCallback(callback, deps);
-	};
-	exports.useContext = function(Context) {
-		return ReactSharedInternals.H.useContext(Context);
+	exports.useContext = function(a) {
+		return U.current.useContext(a);
 	};
 	exports.useDebugValue = function() {};
-	exports.useDeferredValue = function(value, initialValue) {
-		return ReactSharedInternals.H.useDeferredValue(value, initialValue);
+	exports.useDeferredValue = function(a) {
+		return U.current.useDeferredValue(a);
 	};
-	exports.useEffect = function(create, deps) {
-		return ReactSharedInternals.H.useEffect(create, deps);
-	};
-	exports.useEffectEvent = function(callback) {
-		return ReactSharedInternals.H.useEffectEvent(callback);
+	exports.useEffect = function(a, b) {
+		return U.current.useEffect(a, b);
 	};
 	exports.useId = function() {
-		return ReactSharedInternals.H.useId();
+		return U.current.useId();
 	};
-	exports.useImperativeHandle = function(ref, create, deps) {
-		return ReactSharedInternals.H.useImperativeHandle(ref, create, deps);
+	exports.useImperativeHandle = function(a, b, e) {
+		return U.current.useImperativeHandle(a, b, e);
 	};
-	exports.useInsertionEffect = function(create, deps) {
-		return ReactSharedInternals.H.useInsertionEffect(create, deps);
+	exports.useInsertionEffect = function(a, b) {
+		return U.current.useInsertionEffect(a, b);
 	};
-	exports.useLayoutEffect = function(create, deps) {
-		return ReactSharedInternals.H.useLayoutEffect(create, deps);
+	exports.useLayoutEffect = function(a, b) {
+		return U.current.useLayoutEffect(a, b);
 	};
-	exports.useMemo = function(create, deps) {
-		return ReactSharedInternals.H.useMemo(create, deps);
+	exports.useMemo = function(a, b) {
+		return U.current.useMemo(a, b);
 	};
-	exports.useOptimistic = function(passthrough, reducer) {
-		return ReactSharedInternals.H.useOptimistic(passthrough, reducer);
+	exports.useReducer = function(a, b, e) {
+		return U.current.useReducer(a, b, e);
 	};
-	exports.useReducer = function(reducer, initialArg, init) {
-		return ReactSharedInternals.H.useReducer(reducer, initialArg, init);
+	exports.useRef = function(a) {
+		return U.current.useRef(a);
 	};
-	exports.useRef = function(initialValue) {
-		return ReactSharedInternals.H.useRef(initialValue);
+	exports.useState = function(a) {
+		return U.current.useState(a);
 	};
-	exports.useState = function(initialState) {
-		return ReactSharedInternals.H.useState(initialState);
-	};
-	exports.useSyncExternalStore = function(subscribe, getSnapshot, getServerSnapshot) {
-		return ReactSharedInternals.H.useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+	exports.useSyncExternalStore = function(a, b, e) {
+		return U.current.useSyncExternalStore(a, b, e);
 	};
 	exports.useTransition = function() {
-		return ReactSharedInternals.H.useTransition();
+		return U.current.useTransition();
 	};
-	exports.version = "19.2.7";
+	exports.version = "18.3.1";
 }));
 //#endregion
 //#region node_modules/react/index.js
 var require_react = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	module.exports = require_react_production();
+	module.exports = require_react_production_min();
 }));
 //#endregion
-//#region node_modules/react/cjs/react-jsx-runtime.production.js
+//#region node_modules/react/cjs/react-jsx-runtime.production.min.js
 /**
 * @license React
-* react-jsx-runtime.production.js
+* react-jsx-runtime.production.min.js
 *
-* Copyright (c) Meta Platforms, Inc. and affiliates.
+* Copyright (c) Facebook, Inc. and its affiliates.
 *
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
-var require_react_jsx_runtime_production = /* @__PURE__ */ __commonJSMin(((exports) => {
-	var REACT_ELEMENT_TYPE = Symbol.for("react.transitional.element"), REACT_FRAGMENT_TYPE = Symbol.for("react.fragment");
-	function jsxProd(type, config, maybeKey) {
-		var key = null;
-		void 0 !== maybeKey && (key = "" + maybeKey);
-		void 0 !== config.key && (key = "" + config.key);
-		if ("key" in config) {
-			maybeKey = {};
-			for (var propName in config) "key" !== propName && (maybeKey[propName] = config[propName]);
-		} else maybeKey = config;
-		config = maybeKey.ref;
+var require_react_jsx_runtime_production_min = /* @__PURE__ */ __commonJSMin(((exports) => {
+	var f = require_react(), k = Symbol.for("react.element"), l = Symbol.for("react.fragment"), m = Object.prototype.hasOwnProperty, n = f.__SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED.ReactCurrentOwner, p = {
+		key: !0,
+		ref: !0,
+		__self: !0,
+		__source: !0
+	};
+	function q(c, a, g) {
+		var b, d = {}, e = null, h = null;
+		void 0 !== g && (e = "" + g);
+		void 0 !== a.key && (e = "" + a.key);
+		void 0 !== a.ref && (h = a.ref);
+		for (b in a) m.call(a, b) && !p.hasOwnProperty(b) && (d[b] = a[b]);
+		if (c && c.defaultProps) for (b in a = c.defaultProps, a) void 0 === d[b] && (d[b] = a[b]);
 		return {
-			$$typeof: REACT_ELEMENT_TYPE,
-			type,
-			key,
-			ref: void 0 !== config ? config : null,
-			props: maybeKey
+			$$typeof: k,
+			type: c,
+			key: e,
+			ref: h,
+			props: d,
+			_owner: n.current
 		};
 	}
-	exports.Fragment = REACT_FRAGMENT_TYPE;
-	exports.jsx = jsxProd;
-	exports.jsxs = jsxProd;
+	exports.Fragment = l;
+	exports.jsx = q;
+	exports.jsxs = q;
 }));
 //#endregion
 //#region node_modules/react/jsx-runtime.js
 var require_jsx_runtime = /* @__PURE__ */ __commonJSMin(((exports, module) => {
-	module.exports = require_react_jsx_runtime_production();
+	module.exports = require_react_jsx_runtime_production_min();
 }));
 //#endregion
 //#region node_modules/@tanstack/react-query/build/modern/QueryClientProvider.js
