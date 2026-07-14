@@ -1,4 +1,3 @@
-import { t as renderErrorPage } from "../server.js";
 import { n as createMiddleware, t as createStart } from "./createStart-Dt05N14y.js";
 //#region src/start.ts
 var errorMiddleware = createMiddleware().server(async ({ next }) => {
@@ -7,12 +6,12 @@ var errorMiddleware = createMiddleware().server(async ({ next }) => {
 	} catch (error) {
 		if (error != null && typeof error === "object" && "statusCode" in error) throw error;
 		console.error(error);
-		return new Response(renderErrorPage(), {
-			status: 500,
-			headers: { "content-type": "text/html; charset=utf-8" }
-		});
+		return new Response("Internal Server Error", { status: 500 });
 	}
 });
-var startInstance = createStart(() => ({ requestMiddleware: [errorMiddleware] }));
+var startInstance = createStart(() => ({
+	requestMiddleware: [errorMiddleware],
+	ssr: false
+}));
 //#endregion
 export { startInstance };
