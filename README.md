@@ -141,6 +141,8 @@ http://localhost:5173/signup
 
 ## 📋 API Reference
 
+Base URL: `https://trustbridge-7dch.onrender.com/api`
+
 ### Authentication
 
 | Method | Endpoint | Description |
@@ -212,6 +214,14 @@ http://localhost:5173/signup
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | `GET` | `/api/health` | Server health check |
+
+---
+
+## 🚀 Live URLs
+
+- **Backend API:** https://trustbridge-7dch.onrender.com
+- **Frontend:** (deploy on Render and update this URL)
+- **Health Check:** https://trustbridge-7dch.onrender.com/api/health
 
 ---
 
@@ -322,23 +332,41 @@ CREATE TABLE transactions (
 
 ## 🛠️ Deployment
 
-### Build for Production
+### Backend (Render)
 
-```bash
-npm run build
-# Output in ./
+1. Create a new **Web Service** on Render
+2. Connect your GitHub repo
+3. Settings:
+   - **Root Directory:** `backend`
+   - **Build Command:** `npm install`
+   - **Start Command:** `node server.js`
+   - **Environment:** Node
+4. Add environment variables:
+   ```env
+   PORT=5000
+   NODE_ENV=production
+   FRONTEND_URL=https://your-frontend-url.onrender.com
+   ```
+5. Deploy
 
-cd backend && node server.js
-```
+**Live Backend:** https://trustbridge-7dch.onrender.com
 
-### Environment Variables (Production)
+### Frontend (Render Static Site)
 
-```env
-PORT=5000
-NODE_ENV=production
-JWT_SECRET=<generate-a-strong-secret>
-FRONTEND_URL=https://yourdomain.com
-```
+1. Create a new **Static Site** on Render
+2. Connect your GitHub repo
+3. Settings:
+   - **Build Command:** `npm run build`
+   - **Publish Directory:** `.output/public`
+4. Add environment variable:
+   ```env
+   VITE_API_URL=https://trustbridge-7dch.onrender.com/api
+   ```
+5. Deploy
+
+---
+
+## 🧪 Testing
 
 ---
 
