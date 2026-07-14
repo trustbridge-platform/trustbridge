@@ -9,7 +9,7 @@ plugins: [tanstackStart(), tailwindcss(), viteTsConfigPaths(), react()],
 build: {
 minify: false,
 cssMinify: false,
-ssr: true,
+ssr: false,
 outDir: ".output/public",
 },
 });
