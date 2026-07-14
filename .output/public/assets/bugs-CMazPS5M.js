@@ -1,0 +1,1 @@
+import{c as e}from"./index-CGvcgWkX.js";import{t}from"./-community-page-uAOoAPep.js";var n=e(),r=()=>(0,n.jsx)(t,{channel:`bugs`});export{r as component};
