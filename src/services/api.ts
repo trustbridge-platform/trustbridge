@@ -1,4 +1,5 @@
 const BASE = import.meta.env.VITE_API_URL || "http://localhost:5000/api";
+console.log("[TrustBridge] API Base URL:", BASE);
 
 function getToken(): string | null {
   return localStorage.getItem("trustbridge_token");
