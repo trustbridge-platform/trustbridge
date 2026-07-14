@@ -15,11 +15,26 @@ import authRoutes from "./routes/auth.js";
 const app = express();
 
 app.use(helmet());
+const allowedOrigins = process.env.FRONTEND_URL
+  ? [process.env.FRONTEND_URL]
+  : ['http://localhost:5173', 'http://localhost:5000'];
+
+console.log('[CORS] Allowed origins:', allowedOrigins);
+
 const corsOptions = {
-  origin: [
-    'https://trustbridge-frontend.onrender.com',
-    'https://trustbridge-backend-cj7e.onrender.com'
-  ],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (mobile apps, curl, etc.)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.indexOf(origin) !== -1) {
+      return callback(null, true);
+    }
+    // Also allow the known Render frontend
+    if (origin === 'https://trustbridge-frontend.onrender.com') {
+      return callback(null, true);
+    }
+    console.log('[CORS] Blocked origin:', origin);
+    callback(null, false);
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true
