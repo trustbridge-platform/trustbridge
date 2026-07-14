@@ -15,10 +15,16 @@ import authRoutes from "./routes/auth.js";
 const app = express();
 
 app.use(helmet());
-app.use(cors({
-  origin: ["http://localhost:5173", "http://localhost:8080", "http://localhost:4173", "https://trustbridge-frontend.onrender.com"],
-  credentials: true,
-}));
+const corsOptions = {
+  origin: [
+    'https://trustbridge-frontend.onrender.com',
+    'https://trustbridge-backend-cj7e.onrender.com'
+  ],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true
+};
+app.use(cors(corsOptions));
 
 const limiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 100, message: { error: "Too many requests" } });
 app.use("/api/", limiter);
