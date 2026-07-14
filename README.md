@@ -2,7 +2,7 @@
 
 > **Decentralized humanitarian aid platform. Transparent. Trustless. Borderless.**
 
-TrustBridge connects donors directly to verified humanitarian campaigns using the **Stellar blockchain**. Every donation is recorded on-chain with 4.2-second settlement and near-zero fees — no intermediaries, no hidden costs, no delays.
+TrustBridge connects donors directly to verified humanitarian campaigns using the **Stellar blockchain**. Every donation is recorded on-chain with 4.2-second settlement and near-zero fees - no intermediaries, no hidden costs, no delays.
 
 ---
 
