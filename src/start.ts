@@ -14,6 +14,5 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
 
 export const startInstance = createStart(() => ({
   requestMiddleware: [errorMiddleware],
-  // Disable SSR for client-side only rendering
-  ssr: false,
+  defaultSsr: false,
 }));

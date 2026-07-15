@@ -1,7 +1,0 @@
-import { n as require_jsx_runtime } from "../_libs/react+tanstack__react-query.mjs";
-import { t as CommunityPage } from "./-community-page-DVIne4cv.mjs";
-//#region node_modules/.nitro/vite/services/ssr/assets/bugs-cnsZTqWv.js
-var import_jsx_runtime = require_jsx_runtime();
-var SplitComponent = () => /* @__PURE__ */ (0, import_jsx_runtime.jsx)(CommunityPage, { channel: "bugs" });
-//#endregion
-export { SplitComponent as component };
