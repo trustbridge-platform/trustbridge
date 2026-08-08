@@ -61,7 +61,7 @@ export function donateToCampaign(id: string, data: { xdr: string; amount: number
 }
 
 // Transactions
-export function getMyTransactions(params?: { type?: string; q?: string }) {
+export function getMyTransactions(params?: { type?: string; q?: string; page?: number; limit?: number }) {
   const query = new URLSearchParams(params as any).toString();
   return request(`/transactions/me${query ? `?${query}` : ""}`);
 }

@@ -20,15 +20,35 @@ export function findTransactionById(id) {
 
 export function listTransactions(filter = {}) {
   const db = getDB();
-  let sql = "SELECT * FROM transactions WHERE 1=1";
+  const where = [];
   const params = [];
-  if (filter.user_id) { sql += " AND user_id = ?"; params.push(filter.user_id); }
-  if (filter.campaign_id) { sql += " AND campaign_id = ?"; params.push(filter.campaign_id); }
-  if (filter.type && filter.type !== "all") { sql += " AND type = ?"; params.push(filter.type); }
+  if (filter.user_id) { where.push("t.user_id = ?"); params.push(filter.user_id); }
+  if (filter.campaign_id) { where.push("t.campaign_id = ?"); params.push(filter.campaign_id); }
+  if (filter.type && filter.type !== "all") { where.push("t.type = ?"); params.push(filter.type); }
   if (filter.q) {
-    sql += " AND (hash LIKE ? OR memo LIKE ?)";
+    where.push("(t.hash LIKE ? OR t.memo LIKE ?)");
     params.push(`%${filter.q}%`, `%${filter.q}%`);
   }
-  sql += " ORDER BY created_at DESC LIMIT 100";
-  return db.prepare(sql).all(...params);
+  const whereSql = where.length ? `WHERE ${where.join(" AND ")}` : "";
+
+  // Pagination: default page 1, limit 10 (matching issue #7 requirement)
+  const page = Math.max(1, parseInt(filter.page, 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(filter.limit, 10) || 10));
+  const offset = (page - 1) * limit;
+
+  const total = db.prepare(
+    `SELECT COUNT(*) AS count FROM transactions t ${whereSql}`
+  ).get(...params).count;
+
+  const transactions = db.prepare(
+    `SELECT t.*, c.title AS campaign_title
+     FROM transactions t
+     LEFT JOIN campaigns c ON c.id = t.campaign_id
+     ${whereSql}
+     ORDER BY t.created_at DESC LIMIT ? OFFSET ?`
+  ).all(...params, limit, offset);
+
+  const totalPages = Math.ceil(total / limit);
+
+  return { transactions, total, page, limit, totalPages };
 }

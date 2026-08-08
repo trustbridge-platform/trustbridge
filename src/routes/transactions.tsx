@@ -2,9 +2,20 @@ import { createFileRoute } from "@tanstack/react-router";
 import AppShell from "@/components/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Badge } from "@/components/ui-bits";
-import { Search, ExternalLink, ChevronDown, ArrowDownLeft, ArrowUpRight, Heart } from "lucide-react";
-import { useMemo, useState } from "react";
+import {
+  Search,
+  ExternalLink,
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ArrowDownLeft,
+  ArrowUpRight,
+  Heart,
+  Loader2,
+} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "@/components/AppContext";
+import { getMyTransactions } from "@/services/api";
 
 export const Route = createFileRoute("/transactions")({
   head: () => ({ meta: [{ title: "Transactions — TrustBridge" }] }),
@@ -12,123 +23,239 @@ export const Route = createFileRoute("/transactions")({
 });
 
 type Tx = {
-  id: string;
+  id: number;
   hash: string;
   type: "donation" | "send" | "receive";
-  campaign: string;
   amount: number;
   asset: string;
   status: "confirmed" | "pending" | "failed";
-  date: string;
-  memo?: string;
-  fee: number;
+  created_at: string;
+  memo?: string | null;
+  campaign_title?: string | null;
 };
 
-const all: Tx[] = [
-  { id: "TX-94821", hash: "a1f9c7…d3e2", type: "donation", campaign: "Clean Water Yemen", amount: -125, asset: "XLM", status: "confirmed", date: "2026-06-21 14:32", fee: 0.00001, memo: "Campaign #CW-2026" },
-  { id: "TX-94820", hash: "b2c8d4…91f0", type: "receive", campaign: "Direct transfer", amount: 500, asset: "XLM", status: "confirmed", date: "2026-06-21 13:15", fee: 0.00001 },
-  { id: "TX-94819", hash: "f7e3b1…ac20", type: "send", campaign: "Vendor payout", amount: -1200, asset: "XLM", status: "pending", date: "2026-06-21 11:48", fee: 0.00001 },
-  { id: "TX-94818", hash: "9d2a55…7be4", type: "donation", campaign: "Earthquake Relief Türkiye", amount: -300, asset: "USDC", status: "confirmed", date: "2026-06-20 21:02", fee: 0.00001 },
-  { id: "TX-94817", hash: "1c44a0…0091", type: "receive", campaign: "Mobile Clinics Sudan", amount: 75, asset: "XLM", status: "failed", date: "2026-06-20 18:50", fee: 0 },
-  { id: "TX-94816", hash: "33fa12…ee59", type: "donation", campaign: "Books for Rural Kenya", amount: -50, asset: "XLM", status: "confirmed", date: "2026-06-20 09:11", fee: 0.00001 },
-];
+type Pagination = {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+};
 
-const tabsKey = ["all", "sent", "received"] as const;
+const tabsKey = ["all", "donation", "sent", "received"] as const;
+type Tab = (typeof tabsKey)[number];
+
+const typeToParam: Record<Tab, string | undefined> = {
+  all: undefined,
+  donation: "donation",
+  sent: "send",
+  received: "receive",
+};
 
 function Transactions() {
   const { t } = useApp();
-  const [tab, setTab] = useState<(typeof tabsKey)[number]>("all");
+  const [tab, setTab] = useState<Tab>("all");
   const [q, setQ] = useState("");
-  const [open, setOpen] = useState<string | null>(null);
+  const [page, setPage] = useState(1);
+  const [open, setOpen] = useState<number | null>(null);
+  const [transactions, setTransactions] = useState<Tx[]>([]);
+  const [pagination, setPagination] = useState<Pagination>({
+    page: 1,
+    limit: 10,
+    total: 0,
+    totalPages: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const list = useMemo(() => {
-    return all.filter((tx) => {
-      if (tab === "sent" && tx.amount >= 0) return false;
-      if (tab === "received" && tx.amount < 0) return false;
-      if (!q) return true;
-      const s = q.toLowerCase();
-      return tx.id.toLowerCase().includes(s) || tx.hash.toLowerCase().includes(s) || tx.campaign.toLowerCase().includes(s);
-    });
-  }, [tab, q]);
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    debounceRef.current = setTimeout(() => {
+      setPage(1);
+    }, 300);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [q, tab]);
+
+  useEffect(() => {
+    let cancelled = false;
+    setLoading(true);
+    setError(null);
+    getMyTransactions({
+      type: typeToParam[tab],
+      q: q || undefined,
+      page,
+      limit: 10,
+    })
+      .then((res) => {
+        if (cancelled) return;
+        setTransactions(res.transactions || []);
+        setPagination(res.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 });
+      })
+      .catch((err: Error) => {
+        if (cancelled) return;
+        setError(err.message || "Failed to load transactions");
+        setTransactions([]);
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [tab, page, q]);
+
+  const visibleCount = useMemo(() => transactions.length, [transactions]);
+
+  const goToPage = (p: number) => {
+    setPage(Math.min(Math.max(1, p), Math.max(1, pagination.totalPages)));
+  };
 
   return (
     <RequireAuth>
       <AppShell title={t("transactions")} subtitle={t("overview")}>
-      <div className="glass rounded-2xl p-4 mb-6 flex flex-col md:flex-row gap-3 md:items-center">
-        <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10">
-          {tabsKey.map((tKey) => (
-            <button
-              key={tKey}
-              onClick={() => setTab(tKey)}
-              className={`h-11 px-3 rounded-md text-xs font-medium transition ${
-                tab === tKey ? "bg-gradient-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground"
-              }`}
-            >
-              {t(tKey)}
-            </button>
-          ))}
-        </div>
-        <div className="relative flex-1">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder={t("searchPlaceholder")}
-            className="w-full h-10 pl-9 pr-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary outline-none text-sm"
-          />
-        </div>
-      </div>
-
-      <div className="glass rounded-2xl overflow-hidden divide-y divide-white/5">
-        {list.map((tx) => {
-          const isOpen = open === tx.id;
-          const Icon = tx.type === "donation" ? Heart : tx.amount >= 0 ? ArrowDownLeft : ArrowUpRight;
-          return (
-            <div key={tx.id}>
+        <div className="glass rounded-2xl p-4 mb-6 flex flex-col md:flex-row gap-3 md:items-center">
+          <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10 overflow-x-auto">
+            {tabsKey.map((tKey) => (
               <button
-                onClick={() => setOpen(isOpen ? null : tx.id)}
-                className="w-full flex items-center gap-3 sm:gap-4 p-4 hover:bg-white/[0.02] transition text-left"
+                key={tKey}
+                onClick={() => setTab(tKey)}
+                className={`h-11 px-3 rounded-md text-xs font-medium whitespace-nowrap transition ${
+                  tab === tKey
+                    ? "bg-gradient-brand text-primary-foreground"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                <div className={`w-9 h-9 rounded-lg grid place-items-center shrink-0 ${tx.amount >= 0 ? "bg-emerald/10 text-emerald" : "bg-primary/10 text-primary"}`}>
-                  <Icon className="w-4 h-4" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="text-sm font-medium capitalize truncate">{tx.type} · {tx.campaign}</div>
-                  <div className="text-xs text-muted-foreground font-mono truncate">{tx.hash} · {tx.id}</div>
-                </div>
-                <div className="text-right shrink-0">
-                  <div className={`text-sm font-mono ${tx.amount >= 0 ? "text-emerald" : ""}`}>
-                    {tx.amount >= 0 ? "+" : ""}
-                    {tx.amount} {tx.asset}
-                  </div>
-                  <div className="text-[11px] text-muted-foreground">{tx.date}</div>
-                </div>
-                <Badge tone={tx.status === "confirmed" ? "success" : tx.status === "pending" ? "warning" : "danger"}>
-                  {tx.status === "confirmed" ? t("statusConfirmed") : tx.status === "pending" ? t("statusPending") : t("statusFailed")}
-                </Badge>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition shrink-0 ${isOpen ? "rotate-180" : ""}`} />
+                {t(tKey)}
               </button>
-              {isOpen && (
-                <div className="bg-white/[0.02] px-4 pb-4 grid sm:grid-cols-2 gap-3 text-xs">
-                  <Detail label="Transaction ID" value={tx.id} />
-                  <Detail label="Hash" value={tx.hash} mono />
-                  <Detail label="Network fee" value={`${tx.fee} XLM`} />
-                  <Detail label="Memo" value={tx.memo ?? "—"} />
-                  <a
-                    href="#"
-                    className="sm:col-span-2 inline-flex items-center gap-2 text-primary hover:underline"
+            ))}
+          </div>
+          <div className="relative flex-1">
+            <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder={t("searchPlaceholder")}
+              className="w-full h-10 pl-9 pr-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary outline-none text-sm"
+            />
+          </div>
+        </div>
+
+        <div className="glass rounded-2xl overflow-hidden divide-y divide-white/5">
+          {loading && (
+            <div className="p-8 flex items-center justify-center gap-2 text-sm text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" /> {t("loading")}
+            </div>
+          )}
+
+          {!loading && error && (
+            <div className="p-8 text-center text-sm text-red-400">{error}</div>
+          )}
+
+          {!loading && !error && transactions.length === 0 && (
+            <div className="p-8 text-center text-sm text-muted-foreground">
+              No transactions match your filters.
+            </div>
+          )}
+
+          {!loading &&
+            !error &&
+            transactions.map((tx) => {
+              const isOpen = open === tx.id;
+              const incoming = tx.type === "receive";
+              const Icon = tx.type === "donation" ? Heart : incoming ? ArrowDownLeft : ArrowUpRight;
+              const label = tx.campaign_title || (tx.type === "donation" ? t("donation") : tx.type === "send" ? t("sent") : t("received"));
+              const signed = incoming ? `+${tx.amount}` : `-${tx.amount}`;
+              const shortHash = tx.hash.length > 12 ? `${tx.hash.slice(0, 6)}…${tx.hash.slice(-4)}` : tx.hash;
+              return (
+                <div key={tx.id}>
+                  <button
+                    onClick={() => setOpen(isOpen ? null : tx.id)}
+                    className="w-full flex items-center gap-3 sm:gap-4 p-4 hover:bg-white/[0.02] transition text-left"
                   >
-                    View on Stellar Expert <ExternalLink className="w-3 h-3" />
-                  </a>
+                    <div
+                      className={`w-9 h-9 rounded-lg grid place-items-center shrink-0 ${
+                        incoming ? "bg-emerald/10 text-emerald" : "bg-primary/10 text-primary"
+                      }`}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <div className="text-sm font-medium capitalize truncate">
+                        {tx.type} · {label}
+                      </div>
+                      <div className="text-xs text-muted-foreground font-mono truncate">
+                        {shortHash} · #{tx.id}
+                      </div>
+                    </div>
+                    <div className="text-right shrink-0">
+                      <div className={`text-sm font-mono ${incoming ? "text-emerald" : ""}`}>
+                        {signed} {tx.asset}
+                      </div>
+                      <div className="text-[11px] text-muted-foreground">{tx.created_at}</div>
+                    </div>
+                    <Badge
+                      tone={tx.status === "confirmed" ? "success" : tx.status === "pending" ? "warning" : "danger"}
+                    >
+                      {tx.status === "confirmed"
+                        ? t("statusConfirmed")
+                        : tx.status === "pending"
+                          ? t("statusPending")
+                          : t("statusFailed")}
+                    </Badge>
+                    <ChevronDown
+                      className={`w-4 h-4 text-muted-foreground transition shrink-0 ${isOpen ? "rotate-180" : ""}`}
+                    />
+                  </button>
+                  {isOpen && (
+                    <div className="bg-white/[0.02] px-4 pb-4 grid sm:grid-cols-2 gap-3 text-xs">
+                      <Detail label="Transaction ID" value={`#${tx.id}`} />
+                      <Detail label="Hash" value={tx.hash} mono />
+                      <Detail label="Campaign" value={label} />
+                      <Detail label="Memo" value={tx.memo ?? "—"} />
+                      <a
+                        href="#"
+                        className="sm:col-span-2 inline-flex items-center gap-2 text-primary hover:underline"
+                      >
+                        View on Stellar Expert <ExternalLink className="w-3 h-3" />
+                      </a>
+                    </div>
+                  )}
                 </div>
+              );
+            })}
+        </div>
+
+        {/* Pagination controls */}
+        {!loading && !error && pagination.totalPages > 0 && (
+          <div className="glass rounded-2xl mt-6 p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div className="text-xs text-muted-foreground">
+              {visibleCount > 0 && (
+                <>
+                  {t("page")} {pagination.page} {t("of")} {pagination.totalPages} ·{" "}
+                  {pagination.total} {t("transactionsCount").toLowerCase()}
+                </>
               )}
             </div>
-          );
-        })}
-        {list.length === 0 && (
-          <div className="p-8 text-center text-sm text-muted-foreground">No transactions match your filters.</div>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => goToPage(pagination.page - 1)}
+                disabled={pagination.page <= 1}
+                className="h-9 px-3 rounded-lg glass text-xs font-medium inline-flex items-center gap-1 hover:border-white/25 transition disabled:opacity-40 disabled:pointer-events-none"
+              >
+                <ChevronLeft className="w-4 h-4" /> {t("previous")}
+              </button>
+              <button
+                onClick={() => goToPage(pagination.page + 1)}
+                disabled={pagination.page >= pagination.totalPages}
+                className="h-9 px-3 rounded-lg glass text-xs font-medium inline-flex items-center gap-1 hover:border-white/25 transition disabled:opacity-40 disabled:pointer-events-none"
+              >
+                {t("next")} <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         )}
-      </div>
       </AppShell>
     </RequireAuth>
   );
@@ -138,7 +265,7 @@ function Detail({ label, value, mono }: { label: string; value: string; mono?: b
   return (
     <div className="glass rounded-lg p-3">
       <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>
-      <div className={`mt-1 ${mono ? "font-mono" : ""}`}>{value}</div>
+      <div className={`mt-1 truncate ${mono ? "font-mono" : ""}`}>{value}</div>
     </div>
   );
 }
