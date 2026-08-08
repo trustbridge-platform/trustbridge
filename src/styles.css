@@ -172,6 +172,25 @@
   box-shadow: var(--shadow-card);
 }
 
+/* Mobile touch targets — ensure all interactive elements are at least 44x44px */
+@media (max-width: 767px) {
+  button,
+  a,
+  [role="button"],
+  select,
+  input[type="submit"],
+  input[type="button"] {
+    min-height: 44px;
+  }
+  /* Allow icon-only buttons to keep square proportions */
+  .w-8,
+  .w-9,
+  .w-10 {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
 /* Premium animations */
 @keyframes fade-in-up {
   from { opacity: 0; transform: translateY(16px); }

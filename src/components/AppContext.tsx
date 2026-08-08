@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useMemo, type ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useMemo, useCallback, type ReactNode } from "react";
 import { translations, type TranslationKey } from "@/i18n/translations";
 import * as api from "@/services/api";
 
@@ -23,6 +23,9 @@ type WalletInfo = {
 type Ctx = {
   collapsed: boolean;
   toggleCollapsed: () => void;
+  mobileOpen: boolean;
+  openMobileNav: () => void;
+  closeMobileNav: () => void;
   lang: string;
   setLang: (c: string) => void;
   t: (key: string, fallback?: string) => string;
@@ -75,6 +78,7 @@ export function detectWallets(): typeof DETECTED_WALLETS {
 
 export function AppProvider({ children }: { children: ReactNode }) {
   const [collapsed, setCollapsed] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
   const [lang, setLang] = useState("en");
   const [user, setUser] = useState<any | null>(null);
   const [wallet, setWallet] = useState<WalletInfo>({
@@ -88,6 +92,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [xlmBalance, setXlmBalance] = useState<number | null>(null);
 
   const isAuthenticated = !!user;
+
+  const openMobileNav = useCallback(() => setMobileOpen(true), []);
+  const closeMobileNav = useCallback(() => setMobileOpen(false), []);
 
   // Restore session
   useEffect(() => {
@@ -182,6 +189,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       value={{
         collapsed,
         toggleCollapsed: () => setCollapsed((v) => !v),
+        mobileOpen,
+        openMobileNav,
+        closeMobileNav,
         lang,
         setLang,
         t,

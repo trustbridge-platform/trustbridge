@@ -79,7 +79,7 @@ function Analytics() {
             <button
               key={r}
               onClick={() => setRange(r)}
-              className={`h-8 px-3 rounded-md text-xs font-medium transition ${
+              className={`h-11 px-3 rounded-md text-xs font-medium transition ${
                 range === r ? "bg-gradient-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -133,7 +133,8 @@ function Analytics() {
         <div className="p-5 border-b border-white/5 font-display font-semibold">
           Top performing campaigns
         </div>
-        <table className="w-full text-sm">
+        <div className="overflow-x-auto">
+        <table className="w-full text-sm min-w-[560px]">
           <thead className="text-[11px] uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="text-left font-medium px-5 py-3">Campaign</th>
@@ -160,6 +161,7 @@ function Analytics() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       <div className="glass rounded-2xl p-6 flex flex-col md:flex-row items-center gap-6">

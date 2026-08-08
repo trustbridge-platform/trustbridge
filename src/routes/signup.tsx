@@ -96,7 +96,7 @@ function SignupPage() {
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Name */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block">First Name *</label>
                 <input value={form.firstName} onChange={(e) => setForm({ ...form, firstName: e.target.value })} autoComplete="given-name" className="w-full h-11 px-3 rounded-xl bg-white/5 border border-white/10 focus:border-primary outline-none text-sm" required />
@@ -117,7 +117,7 @@ function SignupPage() {
             </div>
 
             {/* Password */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Password *</label>
                 <div className="relative">
@@ -160,7 +160,7 @@ function SignupPage() {
             </div>
 
             {/* Gender + Country */}
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
                 <label className="text-xs font-medium text-muted-foreground mb-1.5 block">Gender</label>
                 <div className="relative">

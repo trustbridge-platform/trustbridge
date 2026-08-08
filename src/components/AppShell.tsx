@@ -1,5 +1,6 @@
 import type { ReactNode } from "react";
 import Sidebar from "./Sidebar";
+import MobileTopBar from "./MobileTopBar";
 import { useApp } from "./AppContext";
 import ConnectWalletModal from "./modals/ConnectWalletModal";
 import DonateModal from "./modals/DonateModal";
@@ -19,17 +20,18 @@ export default function AppShell({
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar />
+      <MobileTopBar />
       <div
         className={`transition-[padding] duration-300 ${
-          collapsed ? "pl-[72px]" : "pl-[260px]"
+          collapsed ? "lg:pl-[72px]" : "lg:pl-[260px]"
         }`}
       >
-        <main className="px-6 lg:px-10 py-8 max-w-7xl mx-auto">
+        <main className="px-4 sm:px-6 lg:px-10 py-6 lg:py-8 max-w-7xl mx-auto">
           {(title || actions) && (
             <header className="flex flex-wrap items-end justify-between gap-4 mb-8">
               <div>
                 {title && (
-                  <h1 className="font-display text-3xl md:text-4xl font-semibold tracking-tight">
+                  <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight">
                     {title}
                   </h1>
                 )}
@@ -37,7 +39,7 @@ export default function AppShell({
                   <p className="text-muted-foreground mt-1 text-sm">{subtitle}</p>
                 )}
               </div>
-              {actions && <div className="flex items-center gap-2">{actions}</div>}
+              {actions && <div className="flex items-center gap-2 flex-wrap">{actions}</div>}
             </header>
           )}
           {children}

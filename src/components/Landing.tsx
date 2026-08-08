@@ -20,6 +20,7 @@ import {
 } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import Sidebar from "./Sidebar";
+import MobileTopBar from "./MobileTopBar";
 import { useApp } from "./AppContext";
 import ConnectWalletModal from "./modals/ConnectWalletModal";
 import DonateModal from "./modals/DonateModal";
@@ -200,12 +201,13 @@ export default function Landing() {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <Sidebar />
+      <MobileTopBar />
       <ConnectWalletModal />
       <DonateModal />
 
       <div
         className={`transition-[padding] duration-300 ${
-          collapsed ? "pl-[72px]" : "pl-[260px]"
+          collapsed ? "lg:pl-[72px]" : "lg:pl-[260px]"
         }`}
       >
         <main>
