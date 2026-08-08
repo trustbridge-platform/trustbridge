@@ -68,12 +68,60 @@ export function detectWallets(): typeof DETECTED_WALLETS {
   return DETECTED_WALLETS.map((wlt) => ({
     ...wlt,
     detected:
-      (wlt.id === "freighter" && (has("freighterApi") || has("freighter") || has("getFreighterPublicKey"))) ||
+      (wlt.id === "freighter" && (has("freighterApi") || has("freighter"))) ||
       (wlt.id === "lobstr" && (has("lobstr") || has("lobstrWallet"))) ||
-      (wlt.id === "xbull" && (has("xbull") || has("xbullWallet"))) ||
-      (wlt.id === "albedo" && (has("albedo") || has("albedoWallet"))) ||
-      (wlt.id === "walletconnect" && has("ethereum")),
+      (wlt.id === "xbull" && (has("xBull") || has("xbull"))) ||
+      (wlt.id === "albedo" && has("albedo")) ||
+      (wlt.id === "walletconnect" && false),
   }));
+}
+
+async function connectFreighter(): Promise<string> {
+  const fApi = (window as any).freighterApi;
+  if (!fApi) throw new Error("Freighter extension not found.");
+  if (fApi.requestAccess) {
+    const res = await fApi.requestAccess();
+    if (res?.error) throw new Error(res.error);
+    if (res?.address) return res.address;
+  }
+  if (fApi.getAddress) {
+    const res = await fApi.getAddress();
+    if (res?.error) throw new Error(res.error);
+    if (res?.address) return res.address;
+  }
+  if (fApi.getPublicKey) {
+    return await fApi.getPublicKey();
+  }
+  throw new Error("Unsupported Freighter API version.");
+}
+
+async function connectAlbedo(): Promise<string> {
+  const albedo = (window as any).albedo;
+  if (!albedo) throw new Error("Albedo not found.");
+  const resp = await albedo.publicKey({});
+  if (!resp?.pubkey) throw new Error("Albedo did not return an address.");
+  return resp.pubkey;
+}
+
+async function connectXBull(): Promise<string> {
+  const xbull = (window as any).xBull || (window as any).xbull;
+  if (!xbull) throw new Error("xBull extension not found.");
+  if (xbull.connect) {
+    const res = await xbull.connect();
+    if (typeof res === "string") return res;
+    if (res?.publicKey) return res.publicKey;
+  }
+  if (xbull.getPublicKey) {
+    return await xbull.getPublicKey();
+  }
+  throw new Error("Unsupported xBull API version.");
+}
+
+async function connectLobstr(): Promise<string> {
+  const lobstr = (window as any).lobstr || (window as any).lobstrWallet;
+  if (!lobstr) throw new Error("Lobstr not found. Use manual address entry or the Lobstr mobile app instead.");
+  if (lobstr.getPublicKey) return await lobstr.getPublicKey();
+  throw new Error("Unsupported Lobstr API.");
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
@@ -129,37 +177,27 @@ export function AppProvider({ children }: { children: ReactNode }) {
 
   const connectWallet = async (provider: string) => {
     try {
-      let pubkey: string | null = null;
-      if (provider === "freighter" && (window as any).getFreighterPublicKey) {
-        pubkey = await (window as any).getFreighterPublicKey();
-      } else if (provider === "albedo" && (window as any).albedo) {
-        const resp = await (window as any).albedo.publicKey();
-        pubkey = resp.pubkey;
-      } else if (provider === "xbull" && (window as any).xbull) {
-        pubkey = await (window as any).xbull.getPublicKey();
-      } else if (provider === "lobstr" && (window as any).lobstr) {
-        pubkey = await (window as any).lobstr.getPublicKey();
-      } else if (provider === "walletconnect" && (window as any).ethereum) {
-        const accounts = await (window as any).ethereum.request({ method: "eth_requestAccounts" });
-        pubkey = accounts[0];
-      } else {
-        pubkey = "G" + Array.from({ length: 55 }, () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"[Math.floor(Math.random() * 32)]).join("");
-      }
+      let pubkey: string;
+      if (provider === "freighter") pubkey = await connectFreighter();
+      else if (provider === "albedo") pubkey = await connectAlbedo();
+      else if (provider === "xbull") pubkey = await connectXBull();
+      else if (provider === "lobstr") pubkey = await connectLobstr();
+      else throw new Error("WalletConnect is not configured yet.");
+
       setWallet({ connected: true, address: pubkey, provider, detected: true });
       setWalletModalOpen(false);
       localStorage.setItem("trustbridge_wallet", JSON.stringify({ connected: true, address: pubkey, provider, detected: true }));
-      if (pubkey) refreshBalanceExternal(pubkey);
-    } catch {
+      refreshBalanceExternal(pubkey);
+    } catch (err) {
+      console.error("Wallet connection error:", err);
       setWalletModalOpen(false);
     }
   };
 
   const connectManual = async (address: string, memo?: string) => {
-    // Validate Stellar address format
     if (!address.startsWith('G') || address.length !== 56) {
       throw new Error("Invalid Stellar address. Must start with 'G' and be 56 characters.");
     }
-    // Verify on Horizon
     try {
       const resp = await fetch(`https://horizon.stellar.org/accounts/${address}`);
       if (!resp.ok) {
@@ -171,7 +209,6 @@ export function AppProvider({ children }: { children: ReactNode }) {
       setWalletModalOpen(false);
       localStorage.setItem("trustbridge_wallet", JSON.stringify({ connected: true, address, provider: 'manual', detected: true }));
       setXlmBalance(parseFloat(bal));
-      // Also update via API
       try { await api.updateProfile({ walletAddress: address, walletProvider: 'manual' }); } catch {}
     } catch (err: any) {
       throw new Error(err.message || "Failed to verify Stellar address");
