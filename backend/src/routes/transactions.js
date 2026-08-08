@@ -5,12 +5,20 @@ import { getAccountBalance, verifyAndSubmit } from "../services/stellar.js";
 
 const router = Router();
 
-// Get user's transactions
+// Get user's transactions (paginated, filterable by type)
 router.get("/me", authMiddleware, async (req, res) => {
   try {
-    const { type, q } = req.query;
-    const txs = listTransactions({ user_id: req.user.id, type, q });
-    res.json({ transactions: txs });
+    const { type, q, page, limit } = req.query;
+    const result = listTransactions({ user_id: req.user.id, type, q, page, limit });
+    res.json({
+      transactions: result.transactions,
+      pagination: {
+        page: result.page,
+        limit: result.limit,
+        total: result.total,
+        totalPages: result.totalPages,
+      },
+    });
   } catch (err) {
     res.status(500).json({ error: "Failed to load transactions" });
   }
