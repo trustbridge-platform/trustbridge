@@ -64,7 +64,7 @@ function SettingsPage() {
     <RequireAuth>
       <AppShell title={t("settings")} subtitle={t("overview")}>
       <div className="grid lg:grid-cols-[220px,1fr] gap-6">
-        <nav className="glass rounded-2xl p-2 h-fit">
+        <nav className="glass rounded-2xl p-2 h-fit flex lg:flex-col overflow-x-auto">
           {tabs.map((tabItem) => {
             const Icon = tabItem.icon;
             const active = tab === tabItem.id;
@@ -72,7 +72,7 @@ function SettingsPage() {
               <button
                 key={tabItem.id}
                 onClick={() => setTab(tabItem.id)}
-                className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition ${
+                className={`w-full flex items-center gap-3 px-3 min-h-[44px] rounded-lg text-sm font-medium transition whitespace-nowrap ${
                   active ? "bg-sidebar-accent text-foreground" : "text-muted-foreground hover:text-foreground hover:bg-white/5"
                 }`}
               >

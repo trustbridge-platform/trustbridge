@@ -71,11 +71,11 @@ function Dashboard() {
       >
         <div className="grid lg:grid-cols-3 gap-6">
         {/* Wallet panel - spans 2 cols */}
-        <div className="lg:col-span-2 glass rounded-2xl p-6">
-          <div className="flex items-start justify-between gap-4 mb-6">
+        <div className="lg:col-span-2 glass rounded-2xl p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-6">
             <div>
               <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("walletBalance")}</div>
-              <div className="font-display text-4xl font-semibold tracking-tight mt-1">
+              <div className="font-display text-3xl sm:text-4xl font-semibold tracking-tight mt-1">
                 {wallet.connected ? "12,480.25" : "—"} <span className="text-base text-muted-foreground font-normal">XLM</span>
               </div>
               <div className="text-sm text-muted-foreground mt-1">
@@ -83,7 +83,7 @@ function Dashboard() {
               </div>
             </div>
             {!wallet.connected ? (
-              <button onClick={openWalletModal} className="h-10 px-4 rounded-lg bg-gradient-brand text-primary-foreground text-sm font-medium inline-flex items-center gap-2 hover:shadow-glow transition">
+              <button onClick={openWalletModal} className="h-11 px-4 rounded-lg bg-gradient-brand text-primary-foreground text-sm font-medium inline-flex items-center gap-2 hover:shadow-glow transition self-start">
                 <Wallet className="w-4 h-4" /> {t("connect")}
               </button>
             ) : (
@@ -103,7 +103,7 @@ function Dashboard() {
           </div>
 
           {/* Quick actions */}
-          <div className="grid grid-cols-3 gap-3 mt-6">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
             <Link to="/send" className="h-12 rounded-xl bg-gradient-brand text-primary-foreground font-medium inline-flex items-center justify-center gap-2 hover:shadow-glow transition">
               <Send className="w-4 h-4" /> {t("send")}
             </Link>
@@ -117,7 +117,7 @@ function Dashboard() {
         </div>
 
         {/* Network status panel */}
-        <div className="glass rounded-2xl p-6 flex flex-col">
+        <div className="glass rounded-2xl p-4 sm:p-6 flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">{t("network")}</div>
             <Badge tone="success">{t("operational")}</Badge>
@@ -173,7 +173,7 @@ function Dashboard() {
         </div>
         <div className="divide-y divide-white/5">
           {txs.map((tx) => (
-            <div key={tx.id} className="flex items-center gap-4 p-4 hover:bg-white/[0.02] transition">
+            <div key={tx.id} className="flex items-center gap-3 sm:gap-4 p-4 hover:bg-white/[0.02] transition">
               <div className="w-9 h-9 rounded-lg bg-primary/10 grid place-items-center shrink-0">
                 <ArrowLeftRight className="w-4 h-4 text-primary" />
               </div>

@@ -60,7 +60,7 @@ function Transactions() {
             <button
               key={tKey}
               onClick={() => setTab(tKey)}
-              className={`h-8 px-3 rounded-md text-xs font-medium transition ${
+              className={`h-11 px-3 rounded-md text-xs font-medium transition ${
                 tab === tKey ? "bg-gradient-brand text-primary-foreground" : "text-muted-foreground hover:text-foreground"
               }`}
             >
@@ -87,7 +87,7 @@ function Transactions() {
             <div key={tx.id}>
               <button
                 onClick={() => setOpen(isOpen ? null : tx.id)}
-                className="w-full flex items-center gap-4 p-4 hover:bg-white/[0.02] transition text-left"
+                className="w-full flex items-center gap-3 sm:gap-4 p-4 hover:bg-white/[0.02] transition text-left"
               >
                 <div className={`w-9 h-9 rounded-lg grid place-items-center shrink-0 ${tx.amount >= 0 ? "bg-emerald/10 text-emerald" : "bg-primary/10 text-primary"}`}>
                   <Icon className="w-4 h-4" />
@@ -106,7 +106,7 @@ function Transactions() {
                 <Badge tone={tx.status === "confirmed" ? "success" : tx.status === "pending" ? "warning" : "danger"}>
                   {tx.status === "confirmed" ? t("statusConfirmed") : tx.status === "pending" ? t("statusPending") : t("statusFailed")}
                 </Badge>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition ${isOpen ? "rotate-180" : ""}`} />
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition shrink-0 ${isOpen ? "rotate-180" : ""}`} />
               </button>
               {isOpen && (
                 <div className="bg-white/[0.02] px-4 pb-4 grid sm:grid-cols-2 gap-3 text-xs">
