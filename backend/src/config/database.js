@@ -33,6 +33,7 @@ function initSchema() {
       facebook TEXT,
       instagram TEXT,
       youtube TEXT,
+      emailNotifications INTEGER DEFAULT 1,
       created_at TEXT DEFAULT (datetime('now')),
       updated_at TEXT DEFAULT (datetime('now'))
     );
@@ -83,6 +84,9 @@ function initSchema() {
     if (!existing.includes(col)) {
       db.exec(`ALTER TABLE users ADD COLUMN ${col} TEXT`);
     }
+  }
+  if (!existing.includes('emailNotifications')) {
+    db.exec(`ALTER TABLE users ADD COLUMN emailNotifications INTEGER DEFAULT 1`);
   }
 }
 

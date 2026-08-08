@@ -26,7 +26,7 @@ function SettingsPage() {
   const [saved, setSaved] = useState(false);
   const [profile, setProfile] = useState({ name: user?.firstName + " " + user?.lastName || "User", email: user?.email || "" });
   const [prefs, setPrefs] = useState({
-    donations: true,
+    donations: user?.emailNotifications !== 0,
     campaignUpdates: true,
     weeklyDigest: false,
     securityAlerts: true,
@@ -42,6 +42,17 @@ function SettingsPage() {
   const save = () => {
     setSaved(true);
     setTimeout(() => setSaved(false), 2000);
+  };
+
+  const saveNotifications = async () => {
+    try {
+      const res = await api.setEmailNotifications(prefs.donations);
+      setUser(res.user);
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err: any) {
+      console.error("Failed to save notification preferences:", err);
+    }
   };
 
   const handleChangePassword = async (e: React.FormEvent) => {
@@ -126,7 +137,7 @@ function SettingsPage() {
               ] as const).map(([k, label]) => (
                 <Toggle key={k} label={label} value={prefs[k]} onChange={(v) => setPrefs({ ...prefs, [k]: v })} />
               ))}
-              <SaveBar onSave={save} saved={saved} />
+              <SaveBar onSave={saveNotifications} saved={saved} />
             </Section>
           )}
 
