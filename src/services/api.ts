@@ -10,7 +10,6 @@ function getToken(): string | null {
 async function request(path: string, options: RequestInit = {}): Promise<any> {
   const token = getToken();
   const headers: Record<string, string> = {
-    "Content-Type": "application/json",
     ...(options.headers as Record<string, string>),
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -56,8 +55,12 @@ export function getCampaigns(params?: { category?: string; status?: string; q?: 
 export function getCampaign(id: string) {
   return request(`/campaigns/${id}`);
 }
-export function createCampaign(data: any) {
-  return request("/campaigns", { method: "POST", body: JSON.stringify(data) });
+export function createCampaign(data: FormData) {
+  const token = getToken();
+  const headers: Record<string, string> = {};
+  if (token) headers["Authorization"] = `Bearer ${token}`;
+  // Let the browser set multipart/form-data with the correct boundary
+  return request("/campaigns", { method: "POST", body: data, headers });
 }
 export function donateToCampaign(id: string, data: { xdr: string; amount: number; memo?: string }) {
   return request(`/campaigns/${id}/donate`, { method: "POST", body: JSON.stringify(data) });

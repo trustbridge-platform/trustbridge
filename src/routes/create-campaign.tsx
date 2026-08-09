@@ -3,6 +3,7 @@ import AppShell from "@/components/AppShell";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useState } from "react";
 import { CheckCircle2, Upload, Sparkles } from "lucide-react";
+import * as api from "@/services/api";
 
 export const Route = createFileRoute("/create-campaign")({
   head: () => ({ meta: [{ title: "Create Campaign — TrustBridge" }] }),
@@ -12,7 +13,16 @@ export const Route = createFileRoute("/create-campaign")({
 const cats = ["Food & Water", "Disaster Relief", "Medical", "Education", "Shelter", "Other"];
 
 function CreateCampaign() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<{
+    title: string;
+    org: string;
+    desc: string;
+    goal: string;
+    cat: string;
+    location: string;
+    end: string;
+    image: File | string;
+  }>({
     title: "",
     org: "",
     desc: "",
@@ -25,10 +35,10 @@ function CreateCampaign() {
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [success, setSuccess] = useState(false);
 
-  const update = (k: keyof typeof form, v: string) =>
+  const update = (k: keyof typeof form, v: string | File) =>
     setForm((f) => ({ ...f, [k]: v }));
 
-  const submit = (e: React.FormEvent) => {
+  const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const errs: Record<string, string> = {};
     if (form.title.trim().length < 6) errs.title = "At least 6 characters.";
@@ -40,9 +50,23 @@ function CreateCampaign() {
     if (!form.end) errs.end = "Pick an end date.";
     setErrors(errs);
     if (Object.keys(errs).length === 0) {
-      setSuccess(true);
-      setTimeout(() => setSuccess(false), 4000);
-      setForm({ title: "", org: "", desc: "", goal: "", cat: "Food & Water", location: "", end: "", image: "" });
+      try {
+        const fd = new FormData();
+        fd.append("title", form.title);
+        fd.append("description", form.desc);
+        fd.append("organization", form.org);
+        fd.append("category", form.cat);
+        fd.append("goal", String(form.goal));
+        fd.append("endDate", form.end);
+        fd.append("urgent", "false");
+        if (form.image instanceof File) fd.append("image", form.image);
+        await api.createCampaign(fd);
+        setSuccess(true);
+        setTimeout(() => setSuccess(false), 4000);
+        setForm({ title: "", org: "", desc: "", goal: "", cat: "Food & Water", location: "", end: "", image: "" });
+      } catch (err: any) {
+        console.error("Failed to create campaign:", err);
+      }
     }
   };
 
@@ -94,14 +118,18 @@ function CreateCampaign() {
           <div className="glass rounded-2xl p-6">
             <div className="text-xs uppercase tracking-wider text-muted-foreground mb-3">Cover image</div>
             <label className="block aspect-video rounded-xl border-2 border-dashed border-white/15 hover:border-primary/50 transition grid place-items-center cursor-pointer bg-white/[0.02]">
-              <div className="text-center px-4">
-                <Upload className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
-                <div className="text-sm font-medium">Drop or browse</div>
-                <div className="text-xs text-muted-foreground">PNG, JPG up to 5 MB</div>
-              </div>
-              <input type="file" accept="image/*" className="hidden" onChange={(e) => update("image", e.target.files?.[0]?.name ?? "")} />
+              {form.image instanceof File ? (
+                <img src={URL.createObjectURL(form.image)} alt="Preview" className="w-full h-full object-cover rounded-xl" />
+              ) : (
+                <div className="text-center px-4">
+                  <Upload className="w-6 h-6 mx-auto text-muted-foreground mb-2" />
+                  <div className="text-sm font-medium">Drop or browse</div>
+                  <div className="text-xs text-muted-foreground">PNG, JPG up to 5 MB</div>
+                </div>
+              )}
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => update("image", e.target.files?.[0] ?? "")} />
             </label>
-            {form.image && <div className="mt-2 text-xs text-emerald">Selected: {form.image}</div>}
+             {form.image instanceof File && <div className="mt-2 text-xs text-emerald">Selected: {form.image.name}</div>}
           </div>
 
           <div className="glass rounded-2xl p-6">

@@ -12,6 +12,7 @@
     "@stellar/stellar-sdk": "^16.0.1",
     "bcrypt": "^6.0.0",
     "better-sqlite3": "^12.11.1",
+    "cloudinary": "^2.10.0",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
@@ -23,6 +24,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.7.4",
     "morgan": "^1.10.0",
+    "multer": "^2.2.0",
     "resend": "^6.18.1",
     "uuid": "^10.0.0"
   }
