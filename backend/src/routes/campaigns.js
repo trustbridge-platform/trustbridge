@@ -3,6 +3,7 @@ import { listCampaigns, findCampaignById, createCampaign, updateCampaign } from 
 import { createTransaction, listTransactions } from "../models/Transaction.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { verifyAndSubmit } from "../services/stellar.js";
+import { sendDonationConfirmation, sendFundingMilestone } from "../services/email.js";
 
 const router = Router();
 
@@ -50,6 +51,22 @@ router.post("/:id/donate", authMiddleware, async (req, res) => {
       type: "donation", status: "confirmed", memo,
       campaign_id: campaign.id, user_id: req.user.id,
     });
+
+    // Email notifications (fire-and-forget; never block the donation response)
+    sendDonationConfirmation({ donorId: req.user.id, campaignId: campaign.id, amount: Number(amount), hash }).catch((err) => {
+      console.error("[email] donation confirmation failed:", err.message);
+    });
+
+    if (newStatus === "funded" && campaign.status !== "funded") {
+      // Campaign just reached its funding goal — notify the creator
+      const updatedCampaign = findCampaignById(campaign.id);
+      if (updatedCampaign.creator_id) {
+        sendFundingMilestone({ creatorId: updatedCampaign.creator_id, campaignId: campaign.id }).catch((err) => {
+          console.error("[email] funding milestone failed:", err.message);
+        });
+      }
+    }
+
     res.json({ hash, campaign: findCampaignById(campaign.id), transaction: tx });
   } catch (err) {
     res.status(500).json({ error: "Donation failed: " + err.message });

@@ -40,6 +40,9 @@ export function updateProfile(data: Record<string, any>) {
 export function changePassword(data: { oldPassword: string; newPassword: string; confirmPassword: string }) {
   return request("/auth/change-password", { method: "PUT", body: JSON.stringify(data) });
 }
+export function setEmailNotifications(enabled: boolean) {
+  return request("/auth/notifications", { method: "PUT", body: JSON.stringify({ enabled }) });
+}
 export function logout() {
   localStorage.removeItem("trustbridge_token");
   return Promise.resolve();

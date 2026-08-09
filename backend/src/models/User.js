@@ -1,7 +1,7 @@
 import { getDB } from "../config/database.js";
 import bcrypt from "bcrypt";
 
-const USER_FIELDS = `id, firstName, lastName, email, walletAddress, avatar, gender, country, bio, facebook, instagram, youtube, created_at`;
+const USER_FIELDS = `id, firstName, lastName, email, walletAddress, avatar, gender, country, bio, facebook, instagram, youtube, emailNotifications, created_at`;
 
 export async function createUser({ firstName, lastName, email, password, avatar, gender, country, bio, facebook, instagram, youtube }) {
   const db = getDB();
