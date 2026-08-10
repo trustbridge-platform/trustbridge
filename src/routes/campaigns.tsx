@@ -15,6 +15,7 @@ export const Route = createFileRoute("/campaigns")({
 const categoriesKey = ["all", "foodWater", "disasterRelief", "medical", "education"] as const;
 const sortKeys = ["trending", "urgent", "nearlyFunded"] as const;
 
+ feat/campaign-search
 const categoryMap: Record<string, string | undefined> = {
   all: undefined,
   foodWater: "Food & Water",
@@ -48,6 +49,18 @@ function mapApiCampaign(c: any) {
     gradient: gradientMap[c.category] || "from-gray-500 to-gray-600",
   } as const;
 }
+
+const allCampaigns = [
+  { id: 1, title: "Clean Water for Yemen", org: "Mercy Wells", cat: "Food & Water", raised: 84200, goal: 120000, donors: 1284, days: 12, urgent: true, gradient: "from-blue-500 to-emerald-400", image: "" },
+  { id: 2, title: "Earthquake Relief Türkiye", org: "Global Aid Network", cat: "Disaster Relief", raised: 198400, goal: 250000, donors: 4820, days: 4, urgent: true, gradient: "from-rose-500 to-amber-400", image: "" },
+  { id: 3, title: "Mobile Clinics Sudan", org: "MedBridge", cat: "Medical", raised: 42100, goal: 90000, donors: 612, days: 28, urgent: false, gradient: "from-emerald-500 to-cyan-400", image: "" },
+  { id: 4, title: "Books for Rural Kenya", org: "EduFuture", cat: "Education", raised: 28900, goal: 45000, donors: 408, days: 19, urgent: false, gradient: "from-violet-500 to-blue-500", image: "" },
+  { id: 5, title: "Food Aid Gaza", org: "Hope Kitchen", cat: "Food & Water", raised: 312000, goal: 350000, donors: 9201, days: 7, urgent: true, gradient: "from-amber-500 to-rose-500", image: "" },
+  { id: 6, title: "Flood Recovery Pakistan", org: "RiverCare", cat: "Disaster Relief", raised: 56200, goal: 200000, donors: 982, days: 45, urgent: false, gradient: "from-cyan-500 to-blue-600", image: "" },
+  { id: 7, title: "Vaccines for Children DRC", org: "MedBridge", cat: "Medical", raised: 73400, goal: 80000, donors: 1140, days: 9, urgent: false, gradient: "from-emerald-400 to-teal-500", image: "" },
+  { id: 8, title: "Solar Schools Bangladesh", org: "EduFuture", cat: "Education", raised: 12800, goal: 60000, donors: 220, days: 60, urgent: false, gradient: "from-yellow-400 to-orange-500", image: "" },
+];
+ main
 
 function Campaigns() {
   const { openDonate, t } = useApp();
@@ -154,7 +167,10 @@ function Campaigns() {
           const pct = Math.round((c.raised / c.goal) * 100);
           return (
             <div key={c.id} className="glass rounded-2xl overflow-hidden hover:border-white/20 hover:-translate-y-1 transition-all duration-300 flex flex-col">
-              <div className={`h-36 bg-gradient-to-br ${c.gradient} relative`}>
+              <div className={`h-36 relative ${c.image ? '' : `bg-gradient-to-br ${c.gradient}`}`}>
+                {c.image && (
+                  <img src={c.image} alt={c.title} className="w-full h-full object-cover" />
+                )}
                 {c.urgent && (
                   <span className="absolute top-3 left-3"><Badge tone="danger"><Flame className="w-3 h-3" /> {t("urgent")}</Badge></span>
                 )}
