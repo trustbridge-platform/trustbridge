@@ -2,6 +2,7 @@ import { Router } from "express";
 import { listCampaigns, findCampaignById, createCampaign, updateCampaign } from "../models/Campaign.js";
 import { createTransaction, listTransactions } from "../models/Transaction.js";
 import { authMiddleware } from "../middleware/auth.js";
+import { uploadSingle, handleImageUpload } from "../middleware/upload.js";
 import { verifyAndSubmit } from "../services/stellar.js";
 import { sendDonationConfirmation, sendFundingMilestone } from "../services/email.js";
 
@@ -19,16 +20,17 @@ router.get("/", async (req, res) => {
 });
 
 // Create campaign
-router.post("/", authMiddleware, async (req, res) => {
+router.post("/", authMiddleware, uploadSingle, handleImageUpload, async (req, res) => {
   try {
     const { title, description, organization, category, goal, image, endDate, urgent } = req.body;
     const campaign = createCampaign({
       title, description, organization, category,
-      goal: Number(goal), image, end_date: endDate,
+      goal: Number(goal), image: image || null, end_date: endDate,
       urgent: Boolean(urgent), creator_id: req.user.id,
     });
     res.status(201).json({ campaign });
   } catch (err) {
+    console.error("Create campaign error:", err);
     res.status(500).json({ error: "Failed to create campaign" });
   }
 });
