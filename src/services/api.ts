@@ -94,3 +94,18 @@ export function getBalance(address: string) {
 export function connectWallet(data: { address: string; provider: string }) {
   return updateProfile({ walletAddress: data.address, walletProvider: data.provider });
 }
+export function githubCallback(code: string) {
+  return request("/auth/github/callback", { method: "POST", body: JSON.stringify({ code }) });
+}
+export function getAdminStats() {
+  return request("/admin/stats");
+}
+export function getAdminCampaigns() {
+  return request("/admin/campaigns");
+}
+export function deactivateCampaign(id: number) {
+  return request(`/admin/campaigns/${id}/deactivate`, { method: "POST" });
+}
+export function exportTransactionsCsv() {
+  return request("/transactions/export/csv");
+}

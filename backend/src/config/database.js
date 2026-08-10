@@ -88,6 +88,15 @@ function initSchema() {
   if (!existing.includes('emailNotifications')) {
     db.exec(`ALTER TABLE users ADD COLUMN emailNotifications INTEGER DEFAULT 1`);
   }
+  if (!existing.includes('github_id')) {
+    db.exec(`ALTER TABLE users ADD COLUMN github_id TEXT UNIQUE`);
+  }
+  if (!existing.includes('auth_provider')) {
+    db.exec(`ALTER TABLE users ADD COLUMN auth_provider TEXT DEFAULT 'local'`);
+  }
+  if (!existing.includes('role')) {
+    db.exec(`ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'`);
+  }
 }
 
 export default getDB;
