@@ -4,7 +4,8 @@ import { Progress, Badge } from "@/components/ui-bits";
 import { useApp } from "@/components/AppContext";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Search, Users, Clock, Flame, Filter, Heart } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { getCampaigns } from "@/services/api";
 
 export const Route = createFileRoute("/campaigns")({
   head: () => ({ meta: [{ title: "Campaigns — TrustBridge" }] }),
@@ -13,6 +14,41 @@ export const Route = createFileRoute("/campaigns")({
 
 const categoriesKey = ["all", "foodWater", "disasterRelief", "medical", "education"] as const;
 const sortKeys = ["trending", "urgent", "nearlyFunded"] as const;
+
+ feat/campaign-search
+const categoryMap: Record<string, string | undefined> = {
+  all: undefined,
+  foodWater: "Food & Water",
+  disasterRelief: "Disaster Relief",
+  medical: "Medical",
+  education: "Education",
+};
+
+function mapApiCampaign(c: any) {
+  const raised = Number(c.raised || 0);
+  const goal = Number(c.goal || 1);
+  const donors = Number(c.donors || 0);
+  const pct = Math.round((raised / goal) * 100);
+  const urgent = !!c.urgent;
+  const gradientMap: Record<string, string> = {
+    "Food & Water": "from-blue-500 to-emerald-400",
+    "Disaster Relief": "from-rose-500 to-amber-400",
+    "Medical": "from-emerald-500 to-cyan-400",
+    "Education": "from-violet-500 to-blue-500",
+  };
+  return {
+    id: c.id,
+    title: c.title,
+    org: c.organization,
+    cat: c.category,
+    raised,
+    goal,
+    donors,
+    days: Math.max(0, Math.ceil((new Date(c.end_date).getTime() - Date.now()) / (1000 * 60 * 60 * 24))),
+    urgent,
+    gradient: gradientMap[c.category] || "from-gray-500 to-gray-600",
+  } as const;
+}
 
 const allCampaigns = [
   { id: 1, title: "Clean Water for Yemen", org: "Mercy Wells", cat: "Food & Water", raised: 84200, goal: 120000, donors: 1284, days: 12, urgent: true, gradient: "from-blue-500 to-emerald-400", image: "" },
@@ -24,12 +60,17 @@ const allCampaigns = [
   { id: 7, title: "Vaccines for Children DRC", org: "MedBridge", cat: "Medical", raised: 73400, goal: 80000, donors: 1140, days: 9, urgent: false, gradient: "from-emerald-400 to-teal-500", image: "" },
   { id: 8, title: "Solar Schools Bangladesh", org: "EduFuture", cat: "Education", raised: 12800, goal: 60000, donors: 220, days: 60, urgent: false, gradient: "from-yellow-400 to-orange-500", image: "" },
 ];
+ main
 
 function Campaigns() {
   const { openDonate, t } = useApp();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState("All");
   const [sort, setSort] = useState("Trending");
+  const [campaigns, setCampaigns] = useState<any[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
   const labels = {
     all: t("all"),
     foodWater: t("foodWater"),
@@ -43,16 +84,36 @@ function Campaigns() {
     nearlyFunded: t("nearlyFunded"),
   } as const;
 
+  const timerRef = useRef<number | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) window.clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    setError(null);
+    const category = categoryMap[cat];
+    getCampaigns({ category, q: q || undefined })
+      .then((data) => setCampaigns((data.campaigns || []).map(mapApiCampaign)))
+      .catch((e) => setError(e.message))
+      .finally(() => setLoading(false));
+  }, [q, cat]);
+
   const list = useMemo(() => {
-    let l = allCampaigns.filter((c) =>
-      (cat === t("all") || c.cat === cat) &&
-      (c.title.toLowerCase().includes(q.toLowerCase()) || c.org.toLowerCase().includes(q.toLowerCase())),
-    );
+    let l = campaigns;
     if (sort === t("urgent")) l = [...l].sort((a, b) => a.days - b.days);
     if (sort === t("nearlyFunded")) l = [...l].sort((a, b) => b.raised / b.goal - a.raised / a.goal);
     if (sort === t("trending")) l = [...l].sort((a, b) => b.donors - a.donors);
     return l;
-  }, [q, cat, sort]);
+  }, [campaigns, sort]);
+
+  const handleSearch = (value: string) => {
+    if (timerRef.current) window.clearTimeout(timerRef.current);
+    timerRef.current = window.setTimeout(() => setQ(value), 250);
+  };
 
   return (
     <RequireAuth>
@@ -62,7 +123,7 @@ function Campaigns() {
           <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input
             value={q}
-            onChange={(e) => setQ(e.target.value)}
+            onChange={(e) => handleSearch(e.target.value)}
             placeholder={t("searchPlaceholder")}
             className="w-full h-10 pl-9 pr-3 rounded-lg bg-white/5 border border-white/10 focus:border-primary outline-none text-sm"
           />
@@ -92,6 +153,15 @@ function Campaigns() {
         </div>
       </div>
 
+      {loading && (
+        <div className="col-span-full text-center text-sm text-muted-foreground">Loading…</div>
+      )}
+      {error && (
+        <div className="col-span-full text-center text-sm text-red-400">{error}</div>
+      )}
+      {!loading && !error && list.length === 0 && (
+        <div className="col-span-full text-center text-sm text-muted-foreground">No campaigns match your search.</div>
+      )}
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {list.map((c) => {
           const pct = Math.round((c.raised / c.goal) * 100);

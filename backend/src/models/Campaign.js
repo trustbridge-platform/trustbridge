@@ -20,6 +20,11 @@ export function listCampaigns(filter = {}) {
   const params = [];
   if (filter.category && filter.category !== "all") { sql += " AND category = ?"; params.push(filter.category); }
   if (filter.status) { sql += " AND status = ?"; params.push(filter.status); }
+  if (filter.q) {
+    const search = `%${filter.q.toLowerCase()}%`;
+    sql += " AND (LOWER(title) LIKE ? OR LOWER(description) LIKE ? OR LOWER(organization) LIKE ?)";
+    params.push(search, search, search);
+  }
   sql += " ORDER BY created_at DESC LIMIT 50";
   return db.prepare(sql).all(...params);
 }
