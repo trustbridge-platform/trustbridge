@@ -49,7 +49,13 @@ export function logout() {
 
 // Campaigns
 export function getCampaigns(params?: { category?: string; status?: string; q?: string }) {
-  const query = new URLSearchParams(params as any).toString();
+  const clean: Record<string, string> = {};
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined && v !== null && v !== "") clean[k] = String(v);
+    }
+  }
+  const query = new URLSearchParams(clean).toString();
   return request(`/campaigns${query ? `?${query}` : ""}`);
 }
 export function getCampaign(id: string) {
@@ -68,7 +74,13 @@ export function donateToCampaign(id: string, data: { xdr: string; amount: number
 
 // Transactions
 export function getMyTransactions(params?: { type?: string; q?: string; page?: number; limit?: number }) {
-  const query = new URLSearchParams(params as any).toString();
+  const clean: Record<string, string> = {};
+  if (params) {
+    for (const [k, v] of Object.entries(params)) {
+      if (v !== undefined && v !== null && v !== "") clean[k] = String(v);
+    }
+  }
+  const query = new URLSearchParams(clean).toString();
   return request(`/transactions/me${query ? `?${query}` : ""}`);
 }
 export function sendTransaction(data: { xdr: string; to: string; amount: number; memo?: string; asset?: string }) {
