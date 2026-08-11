@@ -75,6 +75,18 @@ function initSchema() {
     CREATE INDEX IF NOT EXISTS idx_transactions_user ON transactions(user_id);
     CREATE INDEX IF NOT EXISTS idx_transactions_campaign ON transactions(campaign_id);
     CREATE INDEX IF NOT EXISTS idx_campaigns_creator ON campaigns(creator_id);
+
+    CREATE TABLE IF NOT EXISTS comments (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      campaign_id INTEGER NOT NULL REFERENCES campaigns(id),
+      user_id INTEGER NOT NULL REFERENCES users(id),
+      text TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now')),
+      updated_at TEXT DEFAULT (datetime('now'))
+    );
+
+    CREATE INDEX IF NOT EXISTS idx_comments_campaign ON comments(campaign_id);
+    CREATE INDEX IF NOT EXISTS idx_comments_user ON comments(user_id);
   `);
 
   // Add columns if they don't exist (safe for re-running)

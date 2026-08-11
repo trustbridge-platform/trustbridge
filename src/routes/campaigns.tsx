@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import AppShell from "@/components/AppShell";
 import { Progress, Badge } from "@/components/ui-bits";
 import { useApp } from "@/components/AppContext";
@@ -15,7 +15,6 @@ export const Route = createFileRoute("/campaigns")({
 const categoriesKey = ["all", "foodWater", "disasterRelief", "medical", "education"] as const;
 const sortKeys = ["trending", "urgent", "nearlyFunded"] as const;
 
- feat/campaign-search
 const categoryMap: Record<string, string | undefined> = {
   all: undefined,
   foodWater: "Food & Water",
@@ -60,7 +59,6 @@ const allCampaigns = [
   { id: 7, title: "Vaccines for Children DRC", org: "MedBridge", cat: "Medical", raised: 73400, goal: 80000, donors: 1140, days: 9, urgent: false, gradient: "from-emerald-400 to-teal-500", image: "" },
   { id: 8, title: "Solar Schools Bangladesh", org: "EduFuture", cat: "Education", raised: 12800, goal: 60000, donors: 220, days: 60, urgent: false, gradient: "from-yellow-400 to-orange-500", image: "" },
 ];
- main
 
 function Campaigns() {
   const { openDonate, t } = useApp();
@@ -189,12 +187,17 @@ function Campaigns() {
                     <span className="inline-flex items-center gap-1"><Users className="w-3 h-3" /> {c.donors.toLocaleString()} {t("donors")}</span>
                     <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" /> {c.days}{t("daysLeft")}</span>
                   </div>
-                  <button
-                    onClick={() => openDonate({ title: c.title, org: c.org, goal: c.goal, raised: c.raised })}
-                    className="w-full h-10 rounded-lg bg-gradient-brand text-primary-foreground text-sm font-medium inline-flex items-center justify-center gap-2 hover:shadow-glow transition"
-                  >
-                    <Heart className="w-4 h-4" /> Donate
-                  </button>
+                   <div className="flex gap-2">
+                     <Link to={`/campaigns/${c.id}`} className="flex-1 h-10 rounded-lg glass hover:border-white/25 text-foreground text-sm font-medium inline-flex items-center justify-center gap-2 transition">
+                       View
+                     </Link>
+                     <button
+                       onClick={() => openDonate({ title: c.title, org: c.org, goal: c.goal, raised: c.raised })}
+                       className="flex-1 h-10 rounded-lg bg-gradient-brand text-primary-foreground text-sm font-medium inline-flex items-center justify-center gap-2 hover:shadow-glow transition"
+                     >
+                       <Heart className="w-4 h-4" /> Donate
+                     </button>
+                   </div>
                 </div>
               </div>
             </div>
