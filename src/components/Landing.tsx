@@ -296,6 +296,89 @@ export default function Landing() {
             </div>
           </section>
 
+          {/* TESTIMONIALS */}
+          <section className="px-6 lg:px-10 py-24 border-t border-border">
+            <div className="max-w-6xl mx-auto">
+              <div className="text-center max-w-2xl mx-auto mb-16">
+                <div className="text-xs uppercase tracking-[0.2em] text-primary mb-3">Testimonials</div>
+                <h2 className="font-display text-4xl md:text-5xl font-semibold tracking-tight mb-4">
+                  Trusted by aid organizations worldwide
+                </h2>
+                <p className="text-muted-foreground text-lg">
+                  Hear from the teams and beneficiaries using TrustBridge to deliver transparent aid.
+                </p>
+              </div>
+
+              <div className="grid md:grid-cols-3 gap-6">
+                <div className="glass rounded-2xl p-6 md:p-8 hover:border-white/20 transition">
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 text-amber fill-amber" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-foreground leading-relaxed mb-6">
+                    "TrustBridge transformed how we distribute disaster relief. Families now receive funds directly within seconds, and donors can verify every transaction on Stellar. The transparency is unmatched."
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-brand grid place-items-center text-primary-foreground font-semibold text-sm">
+                      AM
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Dr. Amina Mwangi</div>
+                      <div className="text-xs text-muted-foreground">Executive Director, East Africa Aid Network</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="glass rounded-2xl p-6 md:p-8 hover:border-white/20 transition">
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 text-amber fill-amber" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-foreground leading-relaxed mb-6">
+                    "We moved our entire donation pipeline to TrustBridge and cut our overhead by 40%. The multi-sig escrow gives our board confidence, and beneficiaries love seeing their aid arrive in real time."
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-brand grid place-items-center text-primary-foreground font-semibold text-sm">
+                      JC
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">James Chen</div>
+                      <div className="text-xs text-muted-foreground">CFO, Global Health Initiative</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="glass rounded-2xl p-6 md:p-8 hover:border-white/20 transition">
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <svg key={i} className="w-4 h-4 text-amber fill-amber" viewBox="0 0 20 20">
+                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                      </svg>
+                    ))}
+                  </div>
+                  <p className="text-foreground leading-relaxed mb-6">
+                    "As a local partner in Colombia, TrustBridge's verification tooling made onboarding seamless. Milestone-based disbursements mean we only release funds when we can confirm real impact."
+                  </p>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-gradient-brand grid place-items-center text-primary-foreground font-semibold text-sm">
+                      SR
+                    </div>
+                    <div>
+                      <div className="font-medium text-sm">Sofía Ramirez</div>
+                      <div className="text-xs text-muted-foreground">Field Operations Lead, Fundación Esperanza</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           {/* FAQ */}
           <section className="px-6 lg:px-10 py-24 border-t border-border">
             <div className="max-w-3xl mx-auto">
