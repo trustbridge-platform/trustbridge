@@ -94,3 +94,7 @@ export function getBalance(address: string) {
 export function connectWallet(data: { address: string; provider: string }) {
   return updateProfile({ walletAddress: data.address, walletProvider: data.provider });
 }
+export function getBalanceHistory(address: string, days?: number) {
+  const params = days ? `?days=${days}` : "";
+  return request(`/transactions/balance-history/${address}${params}`);
+}
