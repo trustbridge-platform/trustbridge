@@ -9,7 +9,9 @@ function getToken(): string | null {
 
 async function request(path: string, options: RequestInit = {}): Promise<any> {
   const token = getToken();
+  const isFormData = options.body instanceof FormData;
   const headers: Record<string, string> = {
+    ...(!isFormData ? { "Content-Type": "application/json" } : {}),
     ...(options.headers as Record<string, string>),
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
