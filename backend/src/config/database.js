@@ -89,7 +89,8 @@ function initSchema() {
     db.exec(`ALTER TABLE users ADD COLUMN emailNotifications INTEGER DEFAULT 1`);
   }
   if (!existing.includes('github_id')) {
-    db.exec(`ALTER TABLE users ADD COLUMN github_id TEXT UNIQUE`);
+    db.exec(`ALTER TABLE users ADD COLUMN github_id TEXT`);
+    db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS idx_users_github_id ON users(github_id) WHERE github_id IS NOT NULL`);
   }
   if (!existing.includes('auth_provider')) {
     db.exec(`ALTER TABLE users ADD COLUMN auth_provider TEXT DEFAULT 'local'`);

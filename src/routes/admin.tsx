@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useApp } from "@/components/AppContext";
 import * as api from "@/services/api";
 
-export const Route = createFileRoute("/admin" as never)({
+export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin Dashboard — TrustBridge" }] }),
   component: AdminDashboard,
 });

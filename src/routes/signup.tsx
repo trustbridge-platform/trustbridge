@@ -219,7 +219,7 @@ function SignupPage() {
           </div>
 
           <a
-            href="/api/auth/github"
+            href={`${import.meta.env.VITE_API_URL}/auth/github`}
             className="mt-4 w-full h-11 rounded-xl border border-white/10 bg-white/5 text-sm font-medium inline-flex items-center justify-center gap-2 hover:bg-white/10 transition"
           >
             <Github className="w-4 h-4" />
