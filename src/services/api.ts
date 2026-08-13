@@ -9,7 +9,9 @@ function getToken(): string | null {
 
 async function request(path: string, options: RequestInit = {}): Promise<any> {
   const token = getToken();
+  const isFormData = options.body instanceof FormData;
   const headers: Record<string, string> = {
+    ...(!isFormData ? { "Content-Type": "application/json" } : {}),
     ...(options.headers as Record<string, string>),
   };
   if (token) headers["Authorization"] = `Bearer ${token}`;
@@ -99,4 +101,19 @@ export function getBalance(address: string) {
 // Wallet
 export function connectWallet(data: { address: string; provider: string }) {
   return updateProfile({ walletAddress: data.address, walletProvider: data.provider });
+}
+export function githubCallback(code: string) {
+  return request("/auth/github/callback", { method: "POST", body: JSON.stringify({ code }) });
+}
+export function getAdminStats() {
+  return request("/admin/stats");
+}
+export function getAdminCampaigns() {
+  return request("/admin/campaigns");
+}
+export function deactivateCampaign(id: number) {
+  return request(`/admin/campaigns/${id}/deactivate`, { method: "POST" });
+}
+export function exportTransactionsCsv() {
+  return request("/transactions/export/csv");
 }

@@ -20,6 +20,7 @@ import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as CreateCampaignRouteImport } from './routes/create-campaign'
 import { Route as CampaignsRouteImport } from './routes/campaigns'
 import { Route as AnalyticsRouteImport } from './routes/analytics'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CommunityUpdatesRouteImport } from './routes/community/updates'
 import { Route as CommunitySupportRouteImport } from './routes/community/support'
@@ -27,6 +28,7 @@ import { Route as CommunityGeneralRouteImport } from './routes/community/general
 import { Route as CommunityFeaturesRouteImport } from './routes/community/features'
 import { Route as CommunityBugsRouteImport } from './routes/community/bugs'
 import { Route as CommunityAnnouncementsRouteImport } from './routes/community/announcements'
+import { Route as AuthGithubCallbackRouteImport } from './routes/auth.github.callback'
 
 const TransactionsRoute = TransactionsRouteImport.update({
   id: '/transactions',
@@ -83,6 +85,11 @@ const AnalyticsRoute = AnalyticsRouteImport.update({
   path: '/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -118,9 +125,15 @@ const CommunityAnnouncementsRoute = CommunityAnnouncementsRouteImport.update({
   path: '/community/announcements',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthGithubCallbackRoute = AuthGithubCallbackRouteImport.update({
+  id: '/auth/github/callback',
+  path: '/auth/github/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/analytics': typeof AnalyticsRoute
   '/campaigns': typeof CampaignsRoute
   '/create-campaign': typeof CreateCampaignRoute
@@ -138,9 +151,11 @@ export interface FileRoutesByFullPath {
   '/community/general': typeof CommunityGeneralRoute
   '/community/support': typeof CommunitySupportRoute
   '/community/updates': typeof CommunityUpdatesRoute
+  '/auth/github/callback': typeof AuthGithubCallbackRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/analytics': typeof AnalyticsRoute
   '/campaigns': typeof CampaignsRoute
   '/create-campaign': typeof CreateCampaignRoute
@@ -158,10 +173,12 @@ export interface FileRoutesByTo {
   '/community/general': typeof CommunityGeneralRoute
   '/community/support': typeof CommunitySupportRoute
   '/community/updates': typeof CommunityUpdatesRoute
+  '/auth/github/callback': typeof AuthGithubCallbackRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/analytics': typeof AnalyticsRoute
   '/campaigns': typeof CampaignsRoute
   '/create-campaign': typeof CreateCampaignRoute
@@ -179,11 +196,13 @@ export interface FileRoutesById {
   '/community/general': typeof CommunityGeneralRoute
   '/community/support': typeof CommunitySupportRoute
   '/community/updates': typeof CommunityUpdatesRoute
+  '/auth/github/callback': typeof AuthGithubCallbackRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/analytics'
     | '/campaigns'
     | '/create-campaign'
@@ -201,9 +220,11 @@ export interface FileRouteTypes {
     | '/community/general'
     | '/community/support'
     | '/community/updates'
+    | '/auth/github/callback'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/analytics'
     | '/campaigns'
     | '/create-campaign'
@@ -221,9 +242,11 @@ export interface FileRouteTypes {
     | '/community/general'
     | '/community/support'
     | '/community/updates'
+    | '/auth/github/callback'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/analytics'
     | '/campaigns'
     | '/create-campaign'
@@ -241,10 +264,12 @@ export interface FileRouteTypes {
     | '/community/general'
     | '/community/support'
     | '/community/updates'
+    | '/auth/github/callback'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AnalyticsRoute: typeof AnalyticsRoute
   CampaignsRoute: typeof CampaignsRoute
   CreateCampaignRoute: typeof CreateCampaignRoute
@@ -262,6 +287,7 @@ export interface RootRouteChildren {
   CommunityGeneralRoute: typeof CommunityGeneralRoute
   CommunitySupportRoute: typeof CommunitySupportRoute
   CommunityUpdatesRoute: typeof CommunityUpdatesRoute
+  AuthGithubCallbackRoute: typeof AuthGithubCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -343,6 +369,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -392,11 +425,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CommunityAnnouncementsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/auth/github/callback': {
+      id: '/auth/github/callback'
+      path: '/auth/github/callback'
+      fullPath: '/auth/github/callback'
+      preLoaderRoute: typeof AuthGithubCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AnalyticsRoute: AnalyticsRoute,
   CampaignsRoute: CampaignsRoute,
   CreateCampaignRoute: CreateCampaignRoute,
@@ -414,6 +455,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommunityGeneralRoute: CommunityGeneralRoute,
   CommunitySupportRoute: CommunitySupportRoute,
   CommunityUpdatesRoute: CommunityUpdatesRoute,
+  AuthGithubCallbackRoute: AuthGithubCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

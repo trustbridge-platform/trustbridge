@@ -1,9 +1,9 @@
-import { Menu, Shield } from "lucide-react";
+import { Menu, Shield, Sun, Moon } from "lucide-react";
 import { Link } from "@tanstack/react-router";
 import { useApp } from "./AppContext";
 
 export default function MobileTopBar() {
-  const { openMobileNav } = useApp();
+  const { openMobileNav, theme, toggleTheme } = useApp();
 
   return (
     <header className="lg:hidden sticky top-0 z-30 flex items-center gap-3 h-14 px-4 border-b border-sidebar-border bg-background/90 backdrop-blur-md">
@@ -22,6 +22,15 @@ export default function MobileTopBar() {
           TrustBridge
         </span>
       </Link>
+      <div className="ml-auto">
+        <button
+          onClick={toggleTheme}
+          className="w-11 h-11 grid place-items-center rounded-lg hover:bg-sidebar-accent text-foreground transition"
+          aria-label={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+        >
+          {theme === "light" ? <Moon className="w-5 h-5" /> : <Sun className="w-5 h-5" />}
+        </button>
+      </div>
     </header>
   );
 }

@@ -5,7 +5,7 @@ const USER_FIELDS = `id, firstName, lastName, email, walletAddress, avatar, gend
 
 export async function createUser({ firstName, lastName, email, password, avatar, gender, country, bio, facebook, instagram, youtube }) {
   const db = getDB();
-  const hash = await bcrypt.hash(password, 10);
+  const hash = password ? await bcrypt.hash(password, 10) : null;
   const stmt = db.prepare(
     "INSERT INTO users (firstName, lastName, email, password, avatar, gender, country, bio, facebook, instagram, youtube) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)"
   );
@@ -16,6 +16,11 @@ export async function createUser({ firstName, lastName, email, password, avatar,
 export async function findUserByEmail(email) {
   const db = getDB();
   return db.prepare("SELECT * FROM users WHERE email = ?").get(email);
+}
+
+export async function findUserByGithubId(githubId) {
+  const db = getDB();
+  return db.prepare("SELECT * FROM users WHERE github_id = ?").get(githubId);
 }
 
 export async function findUserById(id) {
