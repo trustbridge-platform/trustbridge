@@ -11,6 +11,8 @@ import walletRoutes from "./routes/wallet.js";
 import analyticsRoutes from "./routes/analytics.js";
 import healthRoutes from "./routes/health.js";
 import authRoutes from "./routes/auth.js";
+import oauthRoutes from "./routes/oauth.js";
+import adminRoutes from "./routes/admin.js";
 
 const app = express();
 
@@ -50,6 +52,8 @@ app.use(morgan("dev"));
 
 app.use("/api/health", healthRoutes);
 app.use("/api/auth", authRoutes);
+app.use("/api/auth", oauthRoutes);
+app.use("/api/admin", adminRoutes);
 app.use("/api/campaigns", campaignRoutes);
 app.use("/api/transactions", transactionRoutes);
 app.use("/api/wallet", walletRoutes);

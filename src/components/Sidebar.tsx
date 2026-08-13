@@ -25,6 +25,8 @@ import {
   LogOut,
   User,
   X,
+  Sun,
+  Moon,
 } from "lucide-react";
 import { useState } from "react";
 import { useApp, languages } from "./AppContext";
@@ -60,7 +62,7 @@ const pinnedItems = [
 ];
 
 export default function Sidebar() {
-  const { collapsed, toggleCollapsed, lang, setLang, wallet, openWalletModal, disconnectWallet, t, mobileOpen, closeMobileNav } =
+  const { collapsed, toggleCollapsed, lang, setLang, wallet, openWalletModal, disconnectWallet, t, mobileOpen, closeMobileNav, theme, toggleTheme } =
     useApp();
   const [langOpen, setLangOpen] = useState(false);
   const [communityOpen, setCommunityOpen] = useState(true);
@@ -220,6 +222,23 @@ export default function Sidebar() {
         </nav>
 
         <div className="border-t border-sidebar-border p-3 space-y-2 shrink-0">
+          <button
+            onClick={toggleTheme}
+            className="w-full flex items-center gap-3 px-3 min-h-[44px] rounded-lg text-sm font-medium transition text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            title={theme === "light" ? "Switch to dark mode" : "Switch to light mode"}
+          >
+            {theme === "light" ? (
+              <>
+                <Moon className="w-[18px] h-[18px] shrink-0" />
+                {!collapsed && <span className="truncate">Dark Mode</span>}
+              </>
+            ) : (
+              <>
+                <Sun className="w-[18px] h-[18px] shrink-0" />
+                {!collapsed && <span className="truncate">Light Mode</span>}
+              </>
+            )}
+          </button>
           <div className="relative">
             <button
               onClick={() => setLangOpen((v) => !v)}

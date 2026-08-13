@@ -47,6 +47,28 @@ router.post("/send", authMiddleware, async (req, res) => {
   }
 });
 
+// Export transactions CSV
+router.get("/export/csv", authMiddleware, async (req, res) => {
+  try {
+    const { type, q } = req.query;
+    const result = listTransactions({ user_id: req.user.id, type, q, page: 1, limit: 1000 });
+    const transactions = result.transactions || [];
+    const header = "Date,Type,Amount,Status,Counterparty\n";
+    const rows = transactions.map((tx) => {
+      const date = tx.created_at ? new Date(tx.created_at).toISOString() : "";
+      const amount = Number(tx.amount || 0);
+      const counterparty = tx.type === "donation" ? (tx.campaign_title || `Campaign #${tx.campaign_id}`) : tx.to_address || "";
+      return `${date},${tx.type},${amount},${tx.status},"${counterparty.replace(/"/g, '""')}"`;
+    });
+    const csv = header + rows.join("\n");
+    res.setHeader("Content-Type", "text/csv");
+    res.setHeader("Content-Disposition", "attachment; filename=transactions.csv");
+    res.send(csv);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to export CSV" });
+  }
+});
+
 // Balance lookup
 router.get("/balance/:address", async (req, res) => {
   try {
