@@ -59,7 +59,9 @@ const allCampaigns = [
   { id: 7, title: "Vaccines for Children DRC", org: "MedBridge", cat: "Medical", raised: 73400, goal: 80000, donors: 1140, days: 9, urgent: false, gradient: "from-emerald-400 to-teal-500", image: "" },
   { id: 8, title: "Solar Schools Bangladesh", org: "EduFuture", cat: "Education", raised: 12800, goal: 60000, donors: 220, days: 60, urgent: false, gradient: "from-yellow-400 to-orange-500", image: "" },
 ];
+ feat/progress-ring
 
+ main
 function Campaigns() {
   const { openDonate, t } = useApp();
   const [q, setQ] = useState("");

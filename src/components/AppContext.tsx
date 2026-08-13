@@ -29,6 +29,9 @@ type Ctx = {
   lang: string;
   setLang: (c: string) => void;
   t: (key: string, fallback?: string) => string;
+  theme: "light" | "dark";
+  setTheme: (t: "light" | "dark") => void;
+  toggleTheme: () => void;
   wallet: WalletInfo;
   connectWallet: (provider: string) => Promise<void>;
   connectManual: (address: string, memo?: string) => Promise<void>;
@@ -129,6 +132,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [lang, setLang] = useState("en");
   const [user, setUser] = useState<any | null>(null);
+  const [theme, setTheme] = useState<"light" | "dark">("dark");
   const [wallet, setWallet] = useState<WalletInfo>({
     connected: false,
     address: null,
@@ -144,7 +148,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
   const openMobileNav = useCallback(() => setMobileOpen(true), []);
   const closeMobileNav = useCallback(() => setMobileOpen(false), []);
 
-  // Restore session
+  // Restore session and theme
   useEffect(() => {
     if (typeof window !== "undefined") {
       try {
@@ -157,6 +161,10 @@ export function AppProvider({ children }: { children: ReactNode }) {
         const token = localStorage.getItem("trustbridge_token");
         if (token) {
           api.getMe().then((me) => setUser(me.user)).catch(() => localStorage.removeItem("trustbridge_token"));
+        }
+        const savedTheme = localStorage.getItem("trustbridge_theme") as "light" | "dark" | null;
+        if (savedTheme === "light" || savedTheme === "dark") {
+          setTheme(savedTheme);
         }
       } catch {}
     }
@@ -174,6 +182,23 @@ export function AppProvider({ children }: { children: ReactNode }) {
   };
 
   const t = (key: string, fallback?: string) => (translations[lang as keyof typeof translations] as Record<string, string>)?.[key] ?? fallback ?? key;
+
+  // Sync theme with DOM
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (theme === "light") {
+      root.classList.add("light");
+      root.classList.remove("dark");
+    } else {
+      root.classList.add("dark");
+      root.classList.remove("light");
+    }
+    localStorage.setItem("trustbridge_theme", theme);
+  }, [theme]);
+
+  const toggleTheme = useCallback(() => {
+    setTheme((v) => (v === "light" ? "dark" : "light"));
+  }, []);
 
   const connectWallet = async (provider: string) => {
     try {
@@ -232,6 +257,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
         lang,
         setLang,
         t,
+        theme,
+        setTheme,
+        toggleTheme,
         wallet,
         connectWallet,
         connectManual,
