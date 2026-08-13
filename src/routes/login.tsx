@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { Shield, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { Shield, Mail, Lock, Eye, EyeOff, Github } from "lucide-react";
 import { useState } from "react";
 import { useApp } from "@/components/AppContext";
 import * as api from "@/services/api";
@@ -99,6 +99,23 @@ function LoginPage() {
               {loading ? "Signing in…" : "Sign In"}
             </button>
           </form>
+
+          <div className="relative mt-6">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-white/10" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-[#0a0e1a] px-2 text-muted-foreground">Or continue with</span>
+            </div>
+          </div>
+
+          <a
+            href={`${import.meta.env.VITE_API_URL}/auth/github`}
+            className="mt-4 w-full h-11 rounded-xl border border-white/10 bg-white/5 text-sm font-medium inline-flex items-center justify-center gap-2 hover:bg-white/10 transition"
+          >
+            <Github className="w-4 h-4" />
+            Sign in with GitHub
+          </a>
 
           <p className="text-center text-sm text-muted-foreground mt-6">
             Don't have an account? <Link to="/signup" className="text-primary hover:underline">Sign up</Link>

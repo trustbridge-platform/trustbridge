@@ -12,10 +12,11 @@ import {
   ArrowUpRight,
   Heart,
   Loader2,
+  Download,
 } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useApp } from "@/components/AppContext";
-import { getMyTransactions } from "@/services/api";
+import * as api from "@/services/api";
 
 export const Route = createFileRoute("/transactions")({
   head: () => ({ meta: [{ title: "Transactions — TrustBridge" }] }),
@@ -82,7 +83,7 @@ function Transactions() {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    getMyTransactions({
+    api.getMyTransactions({
       type: typeToParam[tab],
       q: q || undefined,
       page,
@@ -93,7 +94,7 @@ function Transactions() {
         setTransactions(res.transactions || []);
         setPagination(res.pagination || { page: 1, limit: 10, total: 0, totalPages: 0 });
       })
-      .catch((err: Error) => {
+      .catch((err) => {
         if (cancelled) return;
         setError(err.message || "Failed to load transactions");
         setTransactions([]);
@@ -116,6 +117,26 @@ function Transactions() {
     <RequireAuth>
       <AppShell title={t("transactions")} subtitle={t("overview")}>
         <div className="glass rounded-2xl p-4 mb-6 flex flex-col md:flex-row gap-3 md:items-center">
+          <button
+            onClick={async () => {
+              try {
+                const res = await api.exportTransactionsCsv();
+                const blob = new Blob([res], { type: "text/csv" });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "transactions.csv";
+                a.click();
+                URL.revokeObjectURL(url);
+              } catch (e) {
+                console.error(e);
+              }
+            }}
+            className="h-10 px-4 rounded-lg border border-white/10 bg-white/5 text-xs font-medium inline-flex items-center justify-center gap-2 hover:bg-white/10 transition"
+          >
+            <Download className="w-4 h-4" />
+            Export CSV
+          </button>
           <div className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10 overflow-x-auto">
             {tabsKey.map((tKey) => (
               <button
