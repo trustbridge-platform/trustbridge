@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { listCampaigns, findCampaignById, createCampaign, updateCampaign } from "../models/Campaign.js";
 import { createTransaction, listTransactions } from "../models/Transaction.js";
+import { createComment, getCommentsByCampaign, deleteComment, deleteCommentByCreator } from "../models/Comment.js";
 import { authMiddleware } from "../middleware/auth.js";
 import { uploadSingle, handleImageUpload } from "../middleware/upload.js";
 import { verifyAndSubmit } from "../services/stellar.js";
@@ -81,9 +82,49 @@ router.get("/:id", async (req, res) => {
     const campaign = findCampaignById(Number(req.params.id));
     if (!campaign) return res.status(404).json({ error: "Not found" });
     const donations = listTransactions({ campaign_id: campaign.id });
-    res.json({ campaign, donations });
+    const comments = getCommentsByCampaign(campaign.id);
+    res.json({ campaign, donations, comments });
   } catch (err) {
     res.status(500).json({ error: "Failed to load campaign" });
+  }
+});
+
+// Comments
+router.post("/:id/comments", authMiddleware, async (req, res) => {
+  try {
+    const campaign = findCampaignById(Number(req.params.id));
+    if (!campaign) return res.status(404).json({ error: "Campaign not found" });
+    const { text } = req.body;
+    if (!text || typeof text !== "string" || text.trim().length === 0) {
+      return res.status(400).json({ error: "Comment text is required" });
+    }
+    const comment = createComment({
+      campaign_id: campaign.id,
+      user_id: req.user.id,
+      text: text.trim(),
+    });
+    res.status(201).json({ comment });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to create comment" });
+  }
+});
+
+router.delete("/:campaignId/comments/:commentId", authMiddleware, async (req, res) => {
+  try {
+    const { campaignId, commentId } = req.params;
+    const deleted = deleteComment(Number(commentId), req.user.id);
+    if (!deleted) {
+      const campaign = findCampaignById(Number(campaignId));
+      if (campaign && campaign.creator_id === req.user.id) {
+        const byCreator = deleteCommentByCreator(Number(commentId), req.user.id);
+        if (!byCreator) return res.status(404).json({ error: "Comment not found" });
+        return res.json({ success: true });
+      }
+      return res.status(404).json({ error: "Comment not found or not authorized" });
+    }
+    res.json({ success: true });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to delete comment" });
   }
 });
 

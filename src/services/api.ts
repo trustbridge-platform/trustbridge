@@ -73,6 +73,12 @@ export function createCampaign(data: FormData) {
 export function donateToCampaign(id: string, data: { xdr: string; amount: number; memo?: string }) {
   return request(`/campaigns/${id}/donate`, { method: "POST", body: JSON.stringify(data) });
 }
+export function createComment(campaignId: string, text: string) {
+  return request(`/campaigns/${campaignId}/comments`, { method: "POST", body: JSON.stringify({ text }) });
+}
+export function deleteComment(campaignId: string, commentId: string) {
+  return request(`/campaigns/${campaignId}/comments/${commentId}`, { method: "DELETE" });
+}
 
 // Transactions
 export function getMyTransactions(params?: { type?: string; q?: string; page?: number; limit?: number }) {
