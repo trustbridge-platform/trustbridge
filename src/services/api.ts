@@ -102,6 +102,10 @@ export function getBalance(address: string) {
 export function connectWallet(data: { address: string; provider: string }) {
   return updateProfile({ walletAddress: data.address, walletProvider: data.provider });
 }
+ feat/balance-history-chart
+export function getBalanceHistory(address: string, days?: number) {
+  const params = days ? `?days=${days}` : "";
+  return request(`/transactions/balance-history/${address}${params}`);
 export function githubCallback(code: string) {
   return request("/auth/github/callback", { method: "POST", body: JSON.stringify({ code }) });
 }
@@ -116,4 +120,5 @@ export function deactivateCampaign(id: number) {
 }
 export function exportTransactionsCsv() {
   return request("/transactions/export/csv");
+ main
 }
