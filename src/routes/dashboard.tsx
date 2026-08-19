@@ -18,6 +18,8 @@ import {
   ExternalLink,
   Network as NetIcon,
 } from "lucide-react";
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { getBalanceHistory } from "@/services/api";
 
 export const Route = createFileRoute("/dashboard")({
   head: () => ({ meta: [{ title: "Dashboard — TrustBridge" }] }),
@@ -36,6 +38,7 @@ function Dashboard() {
   const { wallet, openWalletModal, t } = useApp();
   const [copied, setCopied] = useState(false);
   const [qrSvg, setQrSvg] = useState<string>("");
+  const [balanceHistory, setBalanceHistory] = useState<any[]>([]);
   const address = wallet.address ?? "GA…CONNECT_WALLET_TO_VIEW";
 
   useEffect(() => {
@@ -52,6 +55,23 @@ function Dashboard() {
     setCopied(true);
     setTimeout(() => setCopied(false), 1500);
   };
+
+  // Fetch balance history
+  useEffect(() => {
+    if (!wallet.address) {
+      setBalanceHistory([]);
+      return;
+    }
+    getBalanceHistory(wallet.address, 30)
+      .then((data) => {
+        if (data.history && data.history.length > 0) {
+          setBalanceHistory(data.history);
+        } else {
+          setBalanceHistory([]);
+        }
+      })
+      .catch(() => setBalanceHistory([]));
+  }, [wallet.address]);
 
   return (
     <RequireAuth>
@@ -152,6 +172,53 @@ function Dashboard() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Balance history chart */}
+      <div className="glass rounded-2xl p-4 sm:p-6 mt-6">
+        <div className="font-display font-semibold mb-4">Balance History (30 days)</div>
+        {balanceHistory.length > 0 ? (
+          <div className="h-64 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={balanceHistory}>
+                <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+                <XAxis 
+                  dataKey="date" 
+                  tick={{ fontSize: 11, fill: "currentColor" }}
+                  stroke="rgba(255,255,255,0.1)"
+                  tickFormatter={(value) => new Date(value).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}
+                />
+                <YAxis 
+                  tick={{ fontSize: 11, fill: "currentColor" }}
+                  stroke="rgba(255,255,255,0.1)"
+                  tickFormatter={(value) => `${value.toLocaleString()} XLM`}
+                />
+                <Tooltip 
+                  contentStyle={{ 
+                    backgroundColor: "rgba(15, 15, 25, 0.95)",
+                    border: "1px solid rgba(255,255,255,0.1)",
+                    borderRadius: "12px",
+                    color: "currentColor"
+                  }}
+                  labelFormatter={(label) => new Date(label).toLocaleDateString()}
+                  formatter={(value: number) => [`${value.toLocaleString()} XLM`, "Balance"]}
+                />
+                <Line 
+                  type="monotone" 
+                  dataKey="balance" 
+                  stroke="currentColor" 
+                  strokeWidth={2}
+                  dot={false}
+                  activeDot={{ r: 4, fill: "currentColor" }}
+                />
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
+        ) : (
+          <div className="h-64 flex items-center justify-center text-sm text-muted-foreground">
+            {wallet.connected ? "Not enough transaction history yet to display a chart." : "Connect your wallet to view balance history."}
+          </div>
+        )}
       </div>
 
       {/* Stats row */}

@@ -60,6 +60,9 @@ const allCampaigns = [
   { id: 8, title: "Solar Schools Bangladesh", org: "EduFuture", cat: "Education", raised: 12800, goal: 60000, donors: 220, days: 60, urgent: false, gradient: "from-yellow-400 to-orange-500", image: "" },
 ];
  feat/progress-ring
+ feat/progress-ring
+ feat/campaign-comments
+ main
 
  main
 function Campaigns() {
@@ -194,6 +197,7 @@ function Campaigns() {
                     <span className="inline-flex items-center gap-1"><Users className="w-3 h-3" /> {c.donors.toLocaleString()} {t("donors")}</span>
                     <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" /> {c.days}{t("daysLeft")}</span>
                   </div>
+ feat/progress-ring
                   <div className="flex gap-2">
                     <Link to={`/campaigns/${c.id}`} className="flex-1 h-10 rounded-lg glass hover:border-white/25 text-foreground text-sm font-medium inline-flex items-center justify-center gap-2 transition">
                       View
@@ -205,6 +209,17 @@ function Campaigns() {
                       <Heart className="w-4 h-4" /> Donate
                     </button>
                   </div>
+                   <div className="flex gap-2">
+                     <Link to={`/campaigns/${c.id}`} className="flex-1 h-10 rounded-lg glass hover:border-white/25 text-foreground text-sm font-medium inline-flex items-center justify-center gap-2 transition">
+                       View
+                     </Link>
+                     <button
+                       onClick={() => openDonate({ title: c.title, org: c.org, goal: c.goal, raised: c.raised })}
+                       className="flex-1 h-10 rounded-lg bg-gradient-brand text-primary-foreground text-sm font-medium inline-flex items-center justify-center gap-2 hover:shadow-glow transition"
+                     >
+                       <Heart className="w-4 h-4" /> Donate
+                     </button>
+                   </div> main
                 </div>
               </div>
             </div>

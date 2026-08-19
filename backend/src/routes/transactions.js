@@ -79,4 +79,72 @@ router.get("/balance/:address", async (req, res) => {
   }
 });
 
+// Balance history (derived from payment operations)
+router.get("/balance-history/:address", async (req, res) => {
+  try {
+    const { address } = req.params;
+    const { days = 30 } = req.query;
+    
+    // Get current balance from Horizon
+    const balResp = await fetch(`https://horizon.stellar.org/accounts/${address}`);
+    if (!balResp.ok) {
+      return res.status(500).json({ error: "Failed to fetch account from Horizon" });
+    }
+    const accountData = await balResp.json();
+    const currentBalance = parseFloat(accountData.balances?.find((b: any) => b.asset_type === 'native')?.balance || '0');
+    
+    // Get payment operations for this address
+    const opsResp = await fetch(`https://horizon.stellar.org/accounts/${address}/payments?limit=200&order=desc`);
+    if (!opsResp.ok) {
+      return res.status(500).json({ error: "Failed to fetch payments from Horizon" });
+    }
+    const opsData = await opsResp.json();
+    const payments = opsData.records || [];
+    
+    const cutoffDate = new Date();
+    cutoffDate.setDate(cutoffDate.getDate() - Number(days));
+    
+    // Build running balance from payment history
+    const sampledPoints = {};
+    let runningBalance = currentBalance;
+    
+    // Process payments in reverse chronological order
+    for (const payment of payments) {
+      const txDate = new Date(payment.created_at);
+      if (txDate < cutoffDate) break;
+      
+      const dateKey = payment.created_at.split('T')[0];
+      const amount = parseFloat(payment.amount || '0');
+      
+      // If this address sent money, add it back (going backwards in time)
+      if (payment.from === address) {
+        runningBalance += amount;
+      }
+      // If this address received money, subtract it (going backwards in time)
+      else if (payment.to === address) {
+        runningBalance -= amount;
+      }
+      
+      // Store sampled point (one per day)
+      if (!sampledPoints[dateKey]) {
+        sampledPoints[dateKey] = runningBalance;
+      }
+    }
+    
+    // Convert to array sorted by date
+    const points = Object.entries(sampledPoints)
+      .map(([date, balance]) => ({ date, balance }))
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    
+    res.json({ 
+      history: points,
+      currentBalance,
+      oldestBalance: points.length > 0 ? points[0].balance : currentBalance,
+    });
+  } catch (err) {
+    console.error("Balance history error:", err);
+    res.status(500).json({ error: "Failed to fetch balance history" });
+  }
+});
+
 export default router;

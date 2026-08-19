@@ -73,6 +73,12 @@ export function createCampaign(data: FormData) {
 export function donateToCampaign(id: string, data: { xdr: string; amount: number; memo?: string }) {
   return request(`/campaigns/${id}/donate`, { method: "POST", body: JSON.stringify(data) });
 }
+export function createComment(campaignId: string, text: string) {
+  return request(`/campaigns/${campaignId}/comments`, { method: "POST", body: JSON.stringify({ text }) });
+}
+export function deleteComment(campaignId: string, commentId: string) {
+  return request(`/campaigns/${campaignId}/comments/${commentId}`, { method: "DELETE" });
+}
 
 // Transactions
 export function getMyTransactions(params?: { type?: string; q?: string; page?: number; limit?: number }) {
@@ -96,6 +102,10 @@ export function getBalance(address: string) {
 export function connectWallet(data: { address: string; provider: string }) {
   return updateProfile({ walletAddress: data.address, walletProvider: data.provider });
 }
+ feat/balance-history-chart
+export function getBalanceHistory(address: string, days?: number) {
+  const params = days ? `?days=${days}` : "";
+  return request(`/transactions/balance-history/${address}${params}`);
 export function githubCallback(code: string) {
   return request("/auth/github/callback", { method: "POST", body: JSON.stringify({ code }) });
 }
@@ -110,4 +120,5 @@ export function deactivateCampaign(id: number) {
 }
 export function exportTransactionsCsv() {
   return request("/transactions/export/csv");
+ main
 }
