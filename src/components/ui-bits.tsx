@@ -32,6 +32,62 @@ export function Progress({ value }: { value: number }) {
   );
 }
 
+export function ProgressRing({
+  value,
+  size = 80,
+  strokeWidth = 6,
+  showText = true,
+}: {
+  value: number;
+  size?: number;
+  strokeWidth?: number;
+  showText?: boolean;
+}) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const clamped = Math.min(100, Math.max(0, value));
+  const offset = circumference - (clamped / 100) * circumference;
+
+  return (
+    <div className="relative inline-flex items-center justify-center" style={{ width: size, height: size }}>
+      <svg width={size} height={size} className="transform -rotate-90">
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth={strokeWidth}
+          className="text-white/5"
+        />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          fill="none"
+          stroke="url(#progressGradient)"
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={offset}
+          strokeLinecap="round"
+          className="transition-all duration-700"
+        />
+        <defs>
+          <linearGradient id="progressGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" stopColor="var(--color-primary)" />
+            <stop offset="100%" stopColor="var(--color-emerald)" />
+          </linearGradient>
+        </defs>
+      </svg>
+      {showText && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className="text-xs font-semibold font-display">{clamped}%</span>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function StatTile({
   label,
   value,

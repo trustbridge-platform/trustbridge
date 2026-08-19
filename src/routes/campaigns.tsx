@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import AppShell from "@/components/AppShell";
-import { Progress, Badge } from "@/components/ui-bits";
+import { Progress, Badge, ProgressRing } from "@/components/ui-bits";
 import { useApp } from "@/components/AppContext";
 import { RequireAuth } from "@/components/RequireAuth";
 import { Search, Users, Clock, Flame, Filter, Heart } from "lucide-react";
@@ -59,7 +59,10 @@ const allCampaigns = [
   { id: 7, title: "Vaccines for Children DRC", org: "MedBridge", cat: "Medical", raised: 73400, goal: 80000, donors: 1140, days: 9, urgent: false, gradient: "from-emerald-400 to-teal-500", image: "" },
   { id: 8, title: "Solar Schools Bangladesh", org: "EduFuture", cat: "Education", raised: 12800, goal: 60000, donors: 220, days: 60, urgent: false, gradient: "from-yellow-400 to-orange-500", image: "" },
 ];
+ feat/progress-ring
+ feat/progress-ring
  feat/campaign-comments
+ main
 
  main
 function Campaigns() {
@@ -176,18 +179,35 @@ function Campaigns() {
                 )}
                 <span className="absolute top-3 right-3"><Badge tone="info">{c.cat}</Badge></span>
               </div>
-              <div className="p-5 flex-1 flex flex-col">
+                <div className="p-5 flex-1 flex flex-col">
                 <h3 className="font-display font-semibold text-base leading-snug mb-1">{c.title}</h3>
                 <div className="text-xs text-muted-foreground mb-4">{t("by")} {c.org}</div>
                 <div className="mt-auto space-y-3">
-                  <Progress value={pct} />
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="font-medium">${c.raised.toLocaleString()} <span className="text-muted-foreground">of ${c.goal.toLocaleString()}</span></span>
-                    <span className="text-primary font-semibold">{pct}%</span>
+                  <div className="flex items-center gap-4">
+                    <ProgressRing value={pct} size={56} strokeWidth={5} />
+                    <div className="flex-1">
+                      <Progress value={pct} />
+                      <div className="flex items-center justify-between text-xs mt-1">
+                        <span className="font-medium">${c.raised.toLocaleString()} <span className="text-muted-foreground">of ${c.goal.toLocaleString()}</span></span>
+                        <span className="text-primary font-semibold">{pct}%</span>
+                      </div>
+                    </div>
                   </div>
                   <div className="flex items-center justify-between text-[11px] text-muted-foreground">
                     <span className="inline-flex items-center gap-1"><Users className="w-3 h-3" /> {c.donors.toLocaleString()} {t("donors")}</span>
                     <span className="inline-flex items-center gap-1"><Clock className="w-3 h-3" /> {c.days}{t("daysLeft")}</span>
+                  </div>
+ feat/progress-ring
+                  <div className="flex gap-2">
+                    <Link to={`/campaigns/${c.id}`} className="flex-1 h-10 rounded-lg glass hover:border-white/25 text-foreground text-sm font-medium inline-flex items-center justify-center gap-2 transition">
+                      View
+                    </Link>
+                    <button
+                      onClick={() => openDonate({ title: c.title, org: c.org, goal: c.goal, raised: c.raised })}
+                      className="flex-1 h-10 rounded-lg bg-gradient-brand text-primary-foreground text-sm font-medium inline-flex items-center justify-center gap-2 hover:shadow-glow transition"
+                    >
+                      <Heart className="w-4 h-4" /> Donate
+                    </button>
                   </div>
                    <div className="flex gap-2">
                      <Link to={`/campaigns/${c.id}`} className="flex-1 h-10 rounded-lg glass hover:border-white/25 text-foreground text-sm font-medium inline-flex items-center justify-center gap-2 transition">
@@ -199,7 +219,7 @@ function Campaigns() {
                      >
                        <Heart className="w-4 h-4" /> Donate
                      </button>
-                   </div>
+                   </div> main
                 </div>
               </div>
             </div>
