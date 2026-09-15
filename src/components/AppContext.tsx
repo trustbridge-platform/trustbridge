@@ -57,45 +57,40 @@ export function useApp() {
   return v;
 }
 
-const DETECTED_WALLETS = [
-  { id: "freighter", name: "Freighter", icon: "🔐", installUrl: "https://www.freighter.app" },
-  { id: "lobstr", name: "Lobstr", icon: "🐙", installUrl: "https://lobstr.co" },
-  { id: "xbull", name: "xBull", icon: "🦬", installUrl: "https://xbull.app" },
-  { id: "albedo", name: "Albedo", icon: "🌐", installUrl: "https://albedo.link" },
-  { id: "walletconnect", name: "WalletConnect", icon: "🔗", installUrl: "https://walletconnect.com" },
-];
-
-export function detectWallets(): typeof DETECTED_WALLETS {
-  const w = typeof window !== "undefined" ? window : {};
-  const has = (prop: string) => !!(w as any)[prop];
-  return DETECTED_WALLETS.map((wlt) => ({
-    ...wlt,
-    detected:
-      (wlt.id === "freighter" && (has("freighterApi") || has("freighter"))) ||
-      (wlt.id === "lobstr" && (has("lobstr") || has("lobstrWallet"))) ||
-      (wlt.id === "xbull" && (has("xBull") || has("xbull"))) ||
-      (wlt.id === "albedo" && has("albedo")) ||
-      (wlt.id === "walletconnect" && false),
-  }));
-}
+// Wallet detection lives in @/lib/walletDetection so the modal and any other
+// caller share one implementation. The previous copy here was unused dead code
+// that had already drifted out of sync with the modal's version (it checked
+// "xBull" where the modal checked "xbull"), which is exactly the kind of bug
+// #1 was masking.
 
 async function connectFreighter(): Promise<string> {
-  const fApi = (window as any).freighterApi;
-  if (!fApi) throw new Error("Freighter extension not found.");
-  if (fApi.requestAccess) {
-    const res = await fApi.requestAccess();
-    if (res?.error) throw new Error(res.error);
-    if (res?.address) return res.address;
+  // #1: use the official @stellar/freighter-api package rather than poking at
+  // window.freighterApi directly. Freighter talks to the page over
+  // window.postMessage, so the raw global can be undefined even when the
+  // extension is installed, enabled and working.
+  //
+  // Imported dynamically because the package is CommonJS-only: a static ESM
+  // named import of it breaks this app's SSR prerender step at build time.
+  // It's only ever needed in the browser, in response to a user click, so
+  // deferring the load costs nothing.
+  const { isConnected, requestAccess, getAddress } = await import("@stellar/freighter-api");
+
+  const connected = await isConnected();
+  if (connected.error || !connected.isConnected) {
+    throw new Error("Freighter extension not found. Install it from freighter.app and reload the page.");
   }
-  if (fApi.getAddress) {
-    const res = await fApi.getAddress();
-    if (res?.error) throw new Error(res.error);
-    if (res?.address) return res.address;
-  }
-  if (fApi.getPublicKey) {
-    return await fApi.getPublicKey();
-  }
-  throw new Error("Unsupported Freighter API version.");
+
+  // requestAccess() prompts the user if the app isn't already authorised,
+  // and returns the address once they approve.
+  const access = await requestAccess();
+  if (access.error) throw new Error(access.error);
+  if (access.address) return access.address;
+
+  const addr = await getAddress();
+  if (addr.error) throw new Error(addr.error);
+  if (addr.address) return addr.address;
+
+  throw new Error("Freighter did not return an address.");
 }
 
 async function connectAlbedo(): Promise<string> {
