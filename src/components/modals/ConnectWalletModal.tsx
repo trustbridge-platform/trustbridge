@@ -2,6 +2,7 @@ import { X, Wallet as WalletIcon, ExternalLink, CheckCircle2, QrCode, Copy, XCir
 import { useState, useEffect, useRef } from "react";
 import { useApp } from "../AppContext";
 import QRCode from "qrcode";
+import { pollWalletDetection } from "@/lib/walletDetection";
 
 const walletProviders = [
   { id: "freighter", name: "Freighter", icon: "🔐", installUrl: "https://www.freighter.app" },
@@ -26,82 +27,21 @@ export default function ConnectWalletModal() {
   const [manualError, setManualError] = useState("");
   const [manualSuccess, setManualSuccess] = useState(false);
 
-  // Detect ALL wallets at once when modal opens — with debug logs
+  // Detect wallets when the modal opens.
+  //
+  // #1: extensions inject asynchronously, so a single check made the instant
+  // the modal mounts can run before the extension is ready and permanently
+  // report "not detected". pollWalletDetection re-checks a few times over the
+  // next couple of seconds and updates as soon as a wallet appears.
   useEffect(() => {
     if (!walletModalOpen) return;
 
-    const detectWallets = () => {
-      console.log('🔍 Wallet detection running...');
-      console.log('Window available:', typeof window !== 'undefined');
-      console.log('Online:', typeof navigator !== 'undefined' ? navigator.onLine : 'N/A');
+    const stopPolling = pollWalletDetection(setWalletStatus);
 
-      const has = (prop: string) => {
-        try {
-          if (typeof window === 'undefined') return false;
-          const val = (window as any)[prop];
-          if (val !== undefined && val !== null) {
-            console.log(`✅ ${prop} FOUND:`, typeof val, val.toString().substring(0, 50));
-            return true;
-          } else {
-            console.log(`❌ ${prop} NOT found (undefined)`);
-            return false;
-          }
-        } catch (e) {
-          console.log(`⚠️ ${prop} error:`, e);
-          return false;
-        }
-      };
-
-      // Check Freighter with all known properties
-      const freighterDetected =
-        has("freighterApi") ||
-        has("freighter") ||
-        has("getFreighterPublicKey") ||
-        (typeof window !== 'undefined' && typeof (window as any).getFreighterPublicKey === 'function');
-
-      // Check Lobstr with all known properties
-      const lobstrDetected =
-        has("lobstr") ||
-        has("lobstrWallet") ||
-        (typeof window !== 'undefined' && (
-          typeof (window as any).lobstr?.getPublicKey === 'function' ||
-          typeof (window as any).lobstrWallet?.getPublicKey === 'function'
-        ));
-
-      // Check xBull
-      const xbullDetected =
-        has("xbull") ||
-        has("xbullWallet") ||
-        (typeof window !== 'undefined' && typeof (window as any).xbull?.getPublicKey === 'function');
-
-      // Check Albedo
-      const albedoDetected =
-        has("albedo") ||
-        has("albedoWallet") ||
-        (typeof window !== 'undefined' && typeof (window as any).albedo?.publicKey === 'function');
-
-      console.log('📊 Detection results:', {
-        freighter: freighterDetected,
-        lobstr: lobstrDetected,
-        xbull: xbullDetected,
-        albedo: albedoDetected,
-        walletconnect: true,
-        metamask: has('ethereum'),
-      });
-
-      setWalletStatus({
-        freighter: freighterDetected,
-        lobstr: lobstrDetected,
-        xbull: xbullDetected,
-        albedo: albedoDetected,
-        walletconnect: true,
-        metamask: has("ethereum"),
-      });
-    };
-
-    detectWallets();
     setShowQR(null);
     setQrDataUri("");
+
+    return stopPolling;
   }, [walletModalOpen]);
 
   // Generate REAL QR code when WalletConnect is selected
