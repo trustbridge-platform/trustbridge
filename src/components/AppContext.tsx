@@ -116,10 +116,25 @@ async function connectXBull(): Promise<string> {
 }
 
 async function connectLobstr(): Promise<string> {
-  const lobstr = (window as any).lobstr || (window as any).lobstrWallet;
-  if (!lobstr) throw new Error("Lobstr not found. Use manual address entry or the Lobstr mobile app instead.");
-  if (lobstr.getPublicKey) return await lobstr.getPublicKey();
-  throw new Error("Unsupported Lobstr API.");
+  // #33: use the official @lobstrco/signer-extension-api package rather than
+  // poking at window.lobstr directly, for the same reason as Freighter (#1) —
+  // Lobstr talks to the page over window.postMessage, so the raw global can
+  // be undefined even when the extension is installed, enabled and working.
+  //
+  // Imported dynamically because the package is CommonJS-only: a static ESM
+  // named import of it breaks this app's SSR prerender step at build time.
+  // It's only ever needed in the browser, in response to a user click, so
+  // deferring the load costs nothing.
+  const { isConnected, getPublicKey } = await import("@lobstrco/signer-extension-api");
+
+  const connected = await isConnected();
+  if (!connected) {
+    throw new Error("Lobstr extension not found. Install it from lobstr.co or use manual address entry instead.");
+  }
+
+  const publicKey = await getPublicKey();
+  if (!publicKey) throw new Error("Lobstr did not return an address.");
+  return publicKey;
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
