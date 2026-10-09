@@ -1,21 +1,21 @@
 /**
  * Detects which browser-extension wallets are currently available.
  *
- * Freighter is checked via the official `@stellar/freighter-api` package's
- * `isConnected()`, which is the correct, current way to detect it — the
- * extension communicates with the page over `window.postMessage`, not by
- * synchronously injecting a plain `window.freighterApi` object, so a raw
- * `!!window.freighterApi` check can fail even when Freighter is installed
- * and enabled (see #1).
+ * Freighter and Lobstr are checked via their official npm packages'
+ * `isConnected()` — the correct, current way to detect either of them.
+ * Both extensions communicate with the page over `window.postMessage`
+ * rather than synchronously injecting a plain object onto `window`, so a
+ * raw `!!window.freighterApi` / `!!window.lobstr` check can fail even when
+ * the extension is installed and enabled (see #1, #33).
  *
- * The other wallets below don't publish an equivalent official detection
- * package, so they're still checked via the raw globals they're documented
- * to inject. Callers should still expect these checks to occasionally miss
- * a wallet on the very first call — all browser-extension content scripts
- * inject asynchronously and can still be mid-injection when this runs, so
- * callers that care about a reliable initial result should poll a few
- * times a short interval apart (see `pollWalletDetection` below) rather
- * than trusting a single call.
+ * The remaining wallets below don't publish an equivalent official
+ * detection package, so they're still checked via the raw globals they're
+ * documented to inject. Callers should still expect these checks to
+ * occasionally miss a wallet on the very first call — all browser-extension
+ * content scripts inject asynchronously and can still be mid-injection when
+ * this runs, so callers that care about a reliable initial result should
+ * poll a few times a short interval apart (see `pollWalletDetection` below)
+ * rather than trusting a single call.
  */
 export async function detectWallets(): Promise<Record<string, boolean>> {
   const has = (prop: string) => {
@@ -35,9 +35,20 @@ export async function detectWallets(): Promise<Record<string, boolean>> {
     freighter = false;
   }
 
+  let lobstr = false;
+  try {
+    // Same reasoning as Freighter above: official package, dynamic import to
+    // avoid breaking SSR (also CommonJS-only), isConnected() is the real
+    // detection mechanism rather than the window.lobstr global.
+    const { isConnected } = await import("@lobstrco/signer-extension-api");
+    lobstr = await isConnected();
+  } catch {
+    lobstr = false;
+  }
+
   return {
     freighter,
-    lobstr: has("lobstr") || has("lobstrWallet"),
+    lobstr,
     xbull: has("xBull") || has("xbull") || has("xbullWallet"),
     albedo: has("albedo") || has("albedoWallet"),
     walletconnect: true,
